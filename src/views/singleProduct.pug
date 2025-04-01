@@ -1,0 +1,148 @@
+-var i=0
+html(lang="en")    
+    head 
+        include ./utils/headerLinks.pug
+        title Product
+        link(rel="stylesheet", href="/styles/SingleProduct/singleProduct.css")
+    body 
+        include ./component/header.pug
+        div.con
+            include ./component/navLinks.pug
+            div.conBoxs
+                div.conbox12 
+                    div.box1
+                        each img in product.images
+                            div.image
+                                img(src=img, alt=product.title)
+                    div.box2
+                        img(src=product.thumbnail, alt=product.title)
+                div.box3
+                    div.text 
+                        h1.title=product.title
+                        div.rating
+                            -let NumberIteration=0
+                            div.starts
+                                while NumberIteration++< +product.rating
+                                    i.fa.fa-star
+                            |(#{product.minimumOrderQuantity})
+                            p |
+                            if(product.availabilityStatus == "In Stock")
+                                span(style="color:green")=product.availabilityStatus
+                            else if(product.availabilityStatus == "Low Stock")
+                                span(style="color:orange")=product.availabilityStatus
+                            else
+                                span(style="color:red")=product.availabilityStatus
+                        div.conPrice
+                            p.newPrice  $#{(product.price -((product.price * product.discountPercentage)/100)).toFixed(2)}. 
+                            p.oldPrice $#{product.price}
+                        p.desc=product.description
+                        div.conBuy 
+                            div.quantity
+                                button.munis(onclick="decreaseQuantity()") 
+                                    i.fa-solid.fa-minus
+                                div#conQuaiintity 0
+                                button.plus(onclick="increaseQuantity()") 
+                                    i.fa-solid.fa-plus
+                            button.btnBuy#addToCart(data-id=product._id) Buy Now
+                        div.Reviews
+                            h2 Reviews
+                            div.conReviews 
+                                each item in product.reviews
+                                    div.review
+                                        div.header
+                                            p.name=item.reviewerName
+                                            p.date=item.date.slice(0,10)
+                                        p.comment=item.comment
+                                        div.footer
+                                            -let NumberIteration=0
+                                            div.conStars
+                                                while NumberIteration++< +item.rating
+                                                    i.fa.fa-star
+                                            p.email=item.reviewerEmail
+                                
+            div.RelateItem
+                div.conHeader 
+                    div.side
+                    h2 Related Item
+                
+                //- cards
+                div.grid 
+                    each item in relatedProducts 
+                        if(i++<4) 
+                            div.card
+                                a(href=`/products/${item.id}`).image
+                                    img(src=item.thumbnail,alt="groceries") 
+                                    if  item.discountPercentage.toFixed(0) > 0
+                                        div.discount #{item.discountPercentage.toFixed(0)}%
+                                button#addToCart(data-id=`${item._id}`) Add To Cart
+                                h3= item.title.slice(0,50) + "..."
+                                div.conPrice
+                                    p.newPrice  $#{(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}. 
+                                    p.oldPrice $#{item.price}
+                                div 
+                                    div.rating
+                                        -let NumberIteration=0
+                                        while NumberIteration++< +item.rating
+                                            i.fa.fa-star
+                                        |(#{item.minimumOrderQuantity})
+                        a(href=`/products/${item.category}`).seeMore See More
+            
+                        
+            
+            
+        include ./component/footer.pug
+
+        script. 
+            let quantity=0;
+            function increaseQuantity() {
+                quantity++;
+                document.getElementById("conQuaiintity").innerText = quantity;
+            }
+            function decreaseQuantity() {
+                //- if (quaintity > 0){
+                //- }
+                quantity--;
+                document.getElementById("conQuaiintity").innerText = quantity;   
+            }
+            let token=document.cookie.split("=")[1]
+            if(token){
+                document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+            }else{
+                document.getElementsByClassName("profile")[0].classList.add("disapeare");
+                document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+            }
+
+
+            let addToCart=document.querySelectorAll("#addToCart");
+            if(token){
+                document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+            }else{
+                document.getElementsByClassName("profile")[0].classList.add("disapeare");
+                document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+            }
+            
+            addToCart.forEach((button)=>{
+                button.addEventListener("click",async(e)=>{
+                    let productId=button.getAttribute("data-id");
+                    console.log(productId)
+                    try{
+                        if(token){
+                            let res = await fetch("http://localhost:5000/api/cart",{
+                                method:"POST",
+                                headers:{
+                                    "Content-Type":"application/json",
+                                    "Authorization":`Bearer ${token}`,
+                                }, 
+                                body:JSON.stringify({productId:productId})
+                            })
+                            let data=await res.json();
+                            console.log(data);
+                        }else{
+                            window.location.href="/register";
+                        }
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                })
+            })

@@ -1,0 +1,134 @@
+@import "../component/input";
+
+.notification {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    min-width: 200px;
+    padding: 0px 10px;
+    color: white;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: .5s;
+    button{
+        border: 0;
+        color: white;
+        font-size: 25px;
+        font-weight: bold;
+        transition: .5s;
+        cursor: pointer;
+        &:hover{
+            color: rgb(125, 4, 4);
+            transform: rotate(180deg);
+        }
+    }
+}
+body{
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .success{
+        @extend .notification;
+        background-color: green;
+        p{
+            font-size: 19px;
+            text-align: center;
+        }
+        button{
+            background-color: green;
+            
+        }
+    }
+    .error{
+        @extend .notification;
+        background-color: red;
+        gap: 10px;
+            p{
+            font-size: 19px;
+            text-align: center;
+        }
+        button{
+            background-color: red;
+        }
+    }
+    form{
+        max-width: 700px;
+        h1{
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .con{
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 20px 0px;
+            div{
+                display: flex;
+                flex-direction: column;
+                // gap: 5px;
+                label{
+                    font-size: 18px;
+                }
+                
+            }
+            .firstName{
+                grid-column: 1/5;
+            }
+            .lastName{
+                grid-column: 6/10;
+            }
+            .age{
+                grid-column: 11/12;
+            }
+            .address{
+                grid-column: 1/6;
+            }
+            .cardID{
+                grid-column: 7/12;
+            }
+            .email{
+                grid-column: 1/6;
+            }
+            .password{
+                grid-column: 7/12;
+            }
+        }
+        .conBtn{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 10px;
+            p{
+                color: #5e5d5d;
+                max-width: 150px;
+                font-size: 18px;
+                a{
+                    color: black;
+                    font-size: 19px;
+                    font-weight: 700;
+                    margin-left: 10px;
+                }
+            }
+            #submit{
+                
+                max-width: 400px;
+                padding: 10px;
+                background-color: black;
+                color: white;
+                border: 2px solid black;
+                transition: .5s;
+                border-radius: 10px;
+                cursor: pointer;
+                margin-top: 15px;
+                &:hover{
+                    background-color: white;
+                    color: black;
+                }
+            }
+        }
+    }
+}

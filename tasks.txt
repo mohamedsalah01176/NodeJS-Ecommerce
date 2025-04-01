@@ -1,0 +1,9 @@
+cript password
+token
+Update qauitiy
+delete product cart
+about
+home page 
+logout button
+profile 
+delete and update data profile

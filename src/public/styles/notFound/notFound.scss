@@ -1,0 +1,40 @@
+@import "../utils/imports";
+
+body{
+    
+    min-height: 90vh;
+    .con{
+        min-height: 70vh;
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        flex-direction: column;
+        text-align: center;
+
+        h1{
+        color: $ColorRed;
+        font-size: 80px;
+        }
+        p{
+            font-size: 18px;
+            margin: 15px 0;
+        }
+        a{
+            min-width: 250px;
+            color: $ColorWhite;
+            background-color: $ColorRed;
+            padding: 15px;
+            border: none;
+            border-radius: 3px;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: .5s;
+            border: 2px solid $ColorRed;
+            &:hover{
+                color: $ColorRed;
+                background-color: $ColorWhite;
+            }
+        }
+    }
+
+}    

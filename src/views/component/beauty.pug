@@ -1,0 +1,22 @@
+-var i=0
+div.grid.container 
+            each item in products 
+                if(item.category == "beauty" && i++<4) 
+                    div.card
+                        a(href=`/products/${item._id}`).image
+                            img(src=item.thumbnail,alt="groceries")
+                            if item.discountPercentage.toFixed(0) > 0
+                                div.discount #{item.discountPercentage.toFixed(0)}%
+                            
+                        button#addToCart(data-id=`${item._id}`,data-price=`${(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}`) Add To Cart
+                        h3= item.title.slice(0,50) + "..."
+                        div.conPrice
+                            p.newPrice  $#{(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}. 
+                            p.oldPrice $#{item.price}
+                        div 
+                            div.rating
+                                -let NumberIteration=0
+                                while NumberIteration++< +item.rating
+                                    i.fa.fa-star
+                                |(#{item.minimumOrderQuantity})
+                a(href=`/products/beauty`).seeMore See More

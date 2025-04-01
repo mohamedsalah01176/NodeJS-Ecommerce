@@ -1,0 +1,148 @@
+input {
+  border: none;
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  transition: 0.5s;
+  outline: none;
+  font-size: 18px;
+  border: 2px solid black;
+}
+input::-moz-placeholder {
+  font-size: 16px;
+}
+input::placeholder {
+  font-size: 16px;
+}
+input:hover {
+  transform: scale(1.07);
+}
+input:focus {
+  transform: scale(1.07);
+}
+
+.notification, body .error, body .success {
+  position: fixed;
+  top: 50px;
+  right: 10px;
+  min-width: 200px;
+  padding: 0px 10px;
+  color: white;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.5s;
+}
+.notification button, body .error button, body .success button {
+  border: 0;
+  color: white;
+  font-size: 25px;
+  font-weight: bold;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.notification button:hover, body .error button:hover, body .success button:hover {
+  color: rgb(125, 4, 4);
+  transform: rotate(180deg);
+}
+
+body {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body .success {
+  background-color: green;
+}
+body .success p {
+  font-size: 19px;
+  text-align: center;
+}
+body .success button {
+  background-color: green;
+}
+body .error {
+  background-color: red;
+  gap: 10px;
+}
+body .error p {
+  font-size: 19px;
+  text-align: center;
+}
+body .error button {
+  background-color: red;
+}
+body form {
+  max-width: 500px;
+  margin-right: 10px;
+}
+body form h1 {
+  text-align: center;
+  font-weight: bold;
+}
+body form .con div {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  margin-top: 14px;
+}
+body form .con div label {
+  font-size: 18px;
+}
+body form .con div input {
+  width: 500px;
+}
+@media (max-width: 600px) {
+  body form .con div input {
+    width: 300px;
+  }
+}
+body form .conBtn {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 10px;
+}
+body form .conBtn p {
+  color: #5e5d5d;
+  max-width: 170px;
+  font-size: 18px;
+}
+body form .conBtn p a {
+  color: black;
+  font-size: 19px;
+  font-weight: 700;
+  margin-left: 10px;
+}
+body form .conBtn #submit {
+  max-width: 270px;
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border: 2px solid black;
+  transition: 0.5s;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+body form .conBtn #submit:hover {
+  background-color: white;
+  color: black;
+}
+body form .forgetPass {
+  text-align: center;
+  margin: 30px 0px 20px;
+  font-size: 19px;
+}
+body form .forgetPass #forgetBtn {
+  background-color: white;
+  text-decoration: underline;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  color: blueviolet;
+  cursor: pointer;
+}/*# sourceMappingURL=login.css.map */

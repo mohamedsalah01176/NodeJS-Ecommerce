@@ -1,0 +1,78 @@
+.fristHeader{
+    background-color: $ColorBlack;
+    color:white;
+    text-align: center;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    .lang{
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        
+    }
+
+}
+nav{
+    border-bottom: 2px solid #ccc;
+    .secondHeader{
+        width: 90%;
+        margin: auto;
+        padding: 30px 0px 20px;
+        color: $ColorBlack;
+        display: flex;
+        justify-content: center;
+        gap: 20px 50px;
+        align-items: center;
+        flex-wrap:wrap ;
+        .logo{
+            font-size: 30px;
+            text-decoration: none;
+            color: $ColorBlack;
+            font-weight:700 ;
+        }
+        .links{
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            li a{
+                font-size: 18px;
+                color: $ColorBlack;
+                text-decoration: none;
+                padding: 5px;
+                border-bottom:2px solid white;
+                transition: .5s;
+                &:hover{
+                    border-bottom:2px solid #ccc;
+                }
+            }
+            .disapeare{
+                display:none;
+            }
+        }
+        div{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            width: 300px;
+            .search{
+                background-color: $BGCCC;
+                padding: 10px;
+                border-radius: 10px;
+                
+                input{
+                    background-color: #cccccc1c;
+                    border: none;
+                    outline: none;
+                }
+            }
+            #cartLink{
+                .fa-cart-plus{
+                    color: black;
+                }
+            }
+        }
+    }
+}

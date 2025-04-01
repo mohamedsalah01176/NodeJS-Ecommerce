@@ -1,0 +1,233 @@
+html(lang="en")
+    head
+        include ./utils/headerLinks.pug
+        title Login Page
+        link(rel="stylesheet", href="/styles/login/login.css")
+    body 
+    form#form
+        h1 Login
+        div.con
+            div.email
+                label(for='email') Email
+                input#email(type='email' placeholder='example@example.com')
+            div.password
+                label(for='password') Password
+                input#password(type='password' placeholder='************')
+        div.conBtn 
+            p if you do not have email go to
+                a(href="/register") Register
+            input#submit(type='submit' value="submit") 
+
+
+
+    script.
+        let email=document.getElementById("email");
+        let password=document.getElementById("password");
+        let submit=document.getElementById("submit");
+        let form=document.getElementById("form");
+        let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
+        let countLogin=0;
+
+        submit.addEventListener("click",async(e)=>{
+            let errorArray=[];
+            let successMessage="";
+            e.preventDefault();
+            if(emailRegex.test(email.value) && passwordRegex.test(password.value)){
+                let bodyValue={
+                    email:email.value,
+                    password:password.value
+                }
+                try{
+                    let res=await fetch("http://localhost:5000/api/login",{
+                        method:"POST",
+                            headers:{
+                                "Content-Type":"application/json"
+                            },
+                            body:JSON.stringify(bodyValue)
+                    })
+                    let data=await res.json();
+                    if(data.status === "fail"){
+                        errorArray.push(data.message);
+                        countLogin++;
+                    }
+                    else{
+                        successMessage=data.message;
+                        document.cookie=`token=${data.token}`
+                        setTimeout(()=>{
+                            window.location.href="/"
+                        })
+                    }
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }else{
+                if(!emailRegex.test(email.value) ){
+                    errorArray.push("Email")
+                }
+                if(!passwordRegex.test(password.value) ){
+                    errorArray.push("Password ")
+                }
+            }
+        
+            if(errorArray.length>0){
+                let Div=document.createElement("div");
+                Div.classList.add("error");
+
+                let message=document.createElement("p");
+                if(errorArray[0].includes("correct") || errorArray[0].includes("registered")){
+                    message.innerText=errorArray[0];
+                }else{
+                    message.innerText=`The ${errorArray[0]} Not Vaild`;
+                }
+
+                let closeBtn=document.createElement("button");
+                closeBtn.innerText="x";
+                closeBtn.onclick=()=>{Div.remove()}
+                setTimeout(()=>{
+                    Div.remove();
+                },2000)
+
+                Div.appendChild(closeBtn);
+                Div.appendChild(message);
+                document.body.appendChild(Div);
+            }else{
+                let Div=document.createElement("div");
+                Div.classList.add("success");
+
+                let message=document.createElement("p");
+                message.innerText=successMessage;
+
+                let closeBtn=document.createElement("button");
+                closeBtn.innerText="X";
+                closeBtn.onclick=()=>{Div.remove()}
+                setTimeout(()=>{
+                    Div.remove();
+                },3000)
+
+                Div.appendChild(closeBtn);
+                Div.appendChild(message);
+                document.body.appendChild(Div);
+            }
+
+
+            if(countLogin>=2 && !document.getElementById("forgetBtn")){
+                let paragraph=document.createElement("p");
+                paragraph.innerText="if you forget password";
+                paragraph.classList.add("forgetPass");
+
+                let btn=document.createElement("button");
+                btn.innerText="Click here";
+                btn.setAttribute("id","forgetBtn");
+                paragraph.appendChild(btn)
+                form.appendChild(paragraph);
+
+                btn.addEventListener("click",(e)=>{
+                    e.preventDefault();
+                    let div=document.createElement("div");
+                    div.setAttribute("id","forgetEmail");
+
+                    let conDiv=document.createElement("div");
+                    conDiv.style.display = "flex";
+                    conDiv.style.justifyContent = "space-between"; 
+                    conDiv.style.alignItems = "center"; 
+                    conDiv.style.gap = "15px";
+
+                    
+                    let label=document.createElement("label");
+                    label.setAttribute("for","forget");
+                    label.innerText="please enter your Card ID"
+                    label.style.fontSize="22px"
+                    label.style.marignTop="0px"
+
+                    let input=document.createElement("input");
+                    input.setAttribute("type","email");
+                    input.setAttribute("placeholder","Your Card ID");
+                    input.setAttribute("id","forget");
+
+                    let button=document.createElement("buttun");
+                    button.innerText="send";
+                    button.style.backgroundColor = "black";
+                    button.style.border = "2px solid black";
+                    button.style.color = "white";
+                    button.style.padding = "10px 15px";
+                    button.style.borderRadius = "10px";
+                    button.style.fontSize = "19px";
+                    button.style.cursor = "pointer";
+                    button.style.marginTop = "7px";
+
+                    div.appendChild(label);
+                    conDiv.appendChild(input);
+                    conDiv.appendChild(button);
+                    form.appendChild(div);
+                    form.appendChild(conDiv);
+                    
+                    button.addEventListener("click",async (e)=>{
+                        successMessage="";
+                        errorArray=[];
+                        e.preventDefault();
+                        try{
+                            let res=await fetch("http://localhost:5000/api/forgetPasswor",{
+                                method:"POST",
+                                headers:{
+                                    "Content-Type":"application/json"
+                                },
+                                body:JSON.stringify({forgetEmail:input.value})
+                            })
+                            let data=await res.json();
+                            console.log(data,"data")
+                            if(data.status === "success"){
+                                successMessage=data.message
+                            }else{
+                                errorArray.push(data.message);
+                            }
+                        }
+                        catch(err){
+                            console.log(err);
+                        }
+                        if(errorArray.length>0){
+                            let Div=document.createElement("div");
+                            Div.classList.add("error");
+
+                            let message=document.createElement("p");
+                            if(errorArray[0].includes("correct") || errorArray[0].includes("registered")){
+                                message.innerText=errorArray[0];
+                            }else{
+                                message.innerText=`The ${errorArray[0]} Not Vaild`;
+                            }
+
+                            let closeBtn=document.createElement("button");
+                            closeBtn.innerText="x";
+                            closeBtn.onclick=()=>{Div.remove()}
+                            setTimeout(()=>{
+                                Div.remove();
+                            },2000)
+
+                            Div.appendChild(closeBtn);
+                            Div.appendChild(message);
+                            document.body.appendChild(Div);
+                        }else{
+                            let Div=document.createElement("div");
+                            Div.classList.add("success");
+
+                            let message=document.createElement("p");
+                            message.innerText=successMessage;
+
+                            let closeBtn=document.createElement("button");
+                            closeBtn.innerText="X";
+                            closeBtn.onclick=()=>{Div.remove()}
+                            setTimeout(()=>{
+                                Div.remove();
+                            },3000)
+
+                            Div.appendChild(closeBtn);
+                            Div.appendChild(message);
+                            document.body.appendChild(Div);
+                        }
+                    })
+
+                })
+
+            }
+        })

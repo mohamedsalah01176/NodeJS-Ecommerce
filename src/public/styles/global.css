@@ -1,0 +1,10 @@
+body {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body .header {
+  color: blue;
+  font-size: 40px;
+}/*# sourceMappingURL=global.css.map */

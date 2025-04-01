@@ -1,0 +1,13 @@
+.conLinks{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    padding-left: 30px;
+    a:not(:last-child){
+        color: #9c9a9a;
+    }
+    a{
+        color: black;
+    }
+}

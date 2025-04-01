@@ -1,0 +1,12 @@
+html(lang="en")
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet", href="/styles/NotFound/notFound.css")
+    body 
+        include ./component/header.pug
+        div.con
+            h1 404 Not Found 
+            p Your visited page not Found, You go to home page 
+            a(href="/") Back to Home Page
+
+        include ./component/footer.pug

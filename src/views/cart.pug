@@ -1,0 +1,144 @@
+html(lang="en")
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet", href="/styles/cart/cart.css")
+    body
+        include ./component/header.pug
+        .con
+            include ./component/navLinks.pug
+            .conTable
+                table 
+                    thead
+                        td Product
+                        td Price
+                        td Quantity
+                        td SubTotal
+                    tbody#tbody
+            .conCheckout 
+                    
+    include ./component/footer.pug
+
+
+
+
+    script. 
+        let token=document.cookie.split("=")[1];
+        let addToCart=document.querySelectorAll("#addToCart");
+        let valueOfCoupon=0;
+        let TotalPrice=0;
+        let dicountValue=0;
+        let counterCoupon=0;
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+        }
+        else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }
+        async function fetchData(){
+            if(token){
+                let res= await fetch("http://localhost:5000/api/cart",{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`
+                    },
+                })
+                let data=await res.json();
+                console.log(data);
+                data.products.forEach((item,index)=>{
+                    TotalPrice+=item.newPrice * item.quantity;
+                    document.getElementById("tbody").innerHTML+=`
+                        <tr>
+                            <td>
+                                <div class="conImg"><img src=${item.thumbnail} alt=${item.title} />
+                                    <h4>${item.title}</h4>
+                                </div>
+                            </td>
+                            <td> $${item.newPrice}</td>
+                            <td> ${item.quantity}</td>
+                            <td> $${item.newPrice * item.quantity}</td>
+                        </tr>
+                    `
+                })
+                let conCheckout=document.querySelectorAll(".conCheckout");
+                conCheckout[0].innerHTML=`
+                    <div class="conCoupon">
+                        <div id="conInput">
+                            <input id="inputCoupon" type="text" placeholder="Coupon Code" />
+                        </div>
+                        <button id="couponBtn">Apply Coupon</button>
+                    </div>
+                    <div class="conCart">
+                        <h4>Cart Total </h4>
+                        <div>
+                            <h5>SubTotal </h5>
+                            <p id="TotalPrice">$${TotalPrice - dicountValue}</p>
+                        </div>
+                        <div>
+                            <h5>Shipping </h5>
+                            <p>25</p>
+                        </div>
+                        <div>
+                            <h5>Total </h5>
+                            <p id="TotalPriceShipping">$${TotalPrice - dicountValue + 25 }</p>
+                        </div>
+                        <button>Process to checkout</button>
+                    </div>
+                `
+                let btn=document.getElementById("couponBtn");
+                let div=document.createElement("div");
+
+                btn.addEventListener("click",async(e)=>{
+                    div.innerText=" "
+                    let TotalPriceP=document.getElementById("TotalPrice");
+                    let TotalPriceShippingP=document.getElementById("TotalPriceShipping");
+                    try{
+                        if(!counterCoupon>=1){
+                            let coupon=document.getElementById("inputCoupon").value;
+                            let res2=await fetch("http://localhost:5000/api/checkCoupon",{
+                                method:"POST",
+                                headers:{
+                                    "Content-Type":"application/json",
+                                    "Authorization":`Bearer ${token}`
+                                },
+                                body:JSON.stringify({coupon:coupon})
+                            })
+                            let data2= await res2.json();
+                            if(data2.status === "success"){
+                                counterCoupon++;
+                                dicountValue=data2.discountValue;
+                                TotalPriceP.innerHTML=TotalPrice - dicountValue
+                                TotalPriceShippingP.innerHTML=TotalPrice - dicountValue + 25
+                            }
+                            
+                            if(data2.status === "fail"){
+                                throw new Error(data2.message)
+                            }
+                        }
+                        else{
+                                throw new Error("you used your discount")
+                        }
+                    }
+                    catch(err){
+                        div.innerText=err ;
+                        div.style.color="red"
+                        div.style.marginTop="5px"
+                        document.getElementById("conInput").appendChild(div)
+                    }
+                    
+                })
+                
+            }
+            else{
+                window.location.href="/register"
+            }
+        }
+        
+        fetchData();
+
+
+
+        
+
+        

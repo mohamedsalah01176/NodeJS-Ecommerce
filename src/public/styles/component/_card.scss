@@ -1,0 +1,81 @@
+.card{
+    background-color: white;
+    padding-bottom: 10px;
+    border-radius: 15px;
+    text-align: center;
+    min-height: 190px;
+    position: relative;
+    transition: .5s;
+    margin-top: 20px;
+
+    .image {
+        height: 170px;
+        padding: 10px;
+        background-color: $BGImage;
+        position: relative;
+        img{
+            height: 100%;
+            width: 70%;
+        }
+        .discount{
+            background-color: $ColorRed;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: $ColorWhite;
+            width: fit-content;
+            padding: 5px 10px ;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+    }
+    h3{
+        text-align: left;
+        margin-top: 15px;
+        margin-bottom: 7px;
+        font-size: 17px;
+    }
+    .conPrice{
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        .newPrice{
+            font-size: 20px;
+            text-align: left;
+            color: $ColorRed;
+            margin: 7px 0px;
+        }
+        .oldPrice{
+            font-size: 20px;
+            text-decoration: line-through;
+            color: #888787;
+        }
+
+    }
+    div .rating{
+        display: flex;
+        gap: 3px;
+        i{
+            color: $Colorstarts;
+        }
+    }
+    button{
+        background-color: $ColorBlack;
+        padding: 10px;
+        border: none;
+        color: $ColorWhite;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: .5s;
+        border: 2px solid $ColorWhite;
+        width: 100%;
+        &:hover{
+            background-color: $ColorWhite;
+            color: $ColorBlack;
+            border: 2px solid $ColorBlack;
+        }
+    }
+    &:hover{
+        transform: scale(1.07);
+    }
+}

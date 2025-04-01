@@ -1,0 +1,20 @@
+html(lang="en")   
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet",href="/styles/Home/home.css")
+    body 
+        include ./component/header.pug
+        h1.header Welcome Mohamed 
+        include ./component/footer.pug
+    
+
+
+
+    script. 
+        let token=document.cookie.split("=")[1]
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+        }else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }

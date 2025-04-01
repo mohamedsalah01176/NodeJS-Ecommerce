@@ -1,0 +1,39 @@
+@import "../utils/imports";
+body{
+    min-height: 90vh;
+    .con{
+        width: 80%;
+        margin: 40px auto;
+        h2{
+            font-size: 50px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .grid{
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(auto-fit,minmax(220px , 1fr));
+            gap: 30px;
+            margin: 10px 0px;
+            position: relative;
+            .seeMore{
+                padding: 10px ;
+                background-color: $ColorRed;
+                color: $ColorWhite;
+                position: absolute;
+                border: 2px solid $ColorRed;
+                border-radius: 10px;
+                top: -50px;
+                right: 10px;
+                cursor: pointer;
+                transition: .5s;
+                &:hover{
+                    background-color: $ColorWhite;
+                    border: 2px solid $ColorRed;
+                    color: $ColorRed;
+    
+                }
+            }
+        }
+    }
+}

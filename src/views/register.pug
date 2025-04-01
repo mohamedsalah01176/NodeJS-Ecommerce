@@ -1,0 +1,168 @@
+html(lang="en")
+    head
+        include ./utils/headerLinks.pug
+        title Register
+        link(rel="stylesheet", href="styles/register/register.css")
+    body 
+        form
+            h1 REGISTER
+            div.con
+                div.firstName
+                    label(for='firstName') Frist Name
+                    input#firstName(type='text' placeholder='example')
+                div.lastName
+                    label(for='lastName') Last Name
+                    input#lastName(type='text' placeholder='example')
+                div.age
+                    label(for='agr') Age
+                    input#agr(type='string' placeholder='21')
+                div.address
+                    label(for='add') Address
+                    input#add(type='text' placeholder='Giza-....-....')
+                div.cardID
+                    label(for='id') Card ID
+                    input#id(type='text' placeholder='2080************')
+                div.email
+                    label(for='email') Email
+                    input#email(type='email' placeholder='example@example.com')
+                div.password
+                    label(for='password') Password
+                    input#password(type='password' placeholder='************')
+            div.conBtn 
+                p if you have email go to
+                    a(href="/login") Login
+                input#submit(type='submit' value="submit") 
+
+
+    script. 
+        
+        let errorArray=[];
+        const firstName = document.getElementById("firstName");
+        const lastName = document.getElementById("lastName");
+        const age = document.getElementById("agr");
+        const address = document.getElementById("add");
+        const cardID = document.getElementById("id");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        let submitButton  = document.getElementById("submit");
+        const registerForm  = document.querySelector("form");
+
+        const nameRegex = /^[A-Za-z]{4,}$/;
+        const ageRegex = /^(1[0-1][0-9]|[1-9][0-9]?)$/;
+        const addressRegex = /^[a-zA-Z0-9\s,.-]+$/;
+        const cardIDRegex = /^\d{14}$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/;
+
+        submitButton .addEventListener('click',async(e)=>{
+            e.preventDefault();
+            errorArray=[];
+            let successMessage="";
+            if(nameRegex.test(firstName.value) && nameRegex.test(lastName.value) && ageRegex.test(age.value) && addressRegex.test(address.value) && cardIDRegex.test(cardID.value) && emailRegex.test(email.value) && passwordRegex.test(password.value)){
+                try{
+                    let res= await fetch("http://localhost:5000/api/register",{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+                        body:JSON.stringify({
+                            firstName: firstName.value,
+                            lastName: lastName.value,
+                            age: parseInt(age.value),
+                            address: address.value,
+                            cardID:cardID.value,
+                            email: email.value,
+                            password: password.value
+                        })
+                    })
+                    let data=await res.json();
+                        console.log(data,"data")
+                    if(data.status === "fail"){
+                        throw new Error(data.message);
+                    }else{
+                        successMessage=data.message;
+                        setTimeout(()=>{
+                            window.location.href="/login";
+                        },2000)
+                    }
+                }
+                catch(err){
+                    errorArray.push(err.message);
+                }
+                
+            }else{
+                if(!nameRegex.test(firstName.value) ){
+                    errorArray.push("Frist Name")
+                }
+                if(!nameRegex.test(lastName.value) ){
+                    errorArray.push("Frist Last")
+                }
+                if(!ageRegex.test(age.value) ){
+                    errorArray.push("Age")
+                }
+                if(!addressRegex.test(address.value) ){
+                    errorArray.push("Address")
+                }
+                if(!cardIDRegex.test(cardID.value) ){
+                    errorArray.push("Card ID")
+                }
+                if(!emailRegex.test(email.value) ){
+                    errorArray.push("Email")
+                }
+                if(!passwordRegex.test(password.value) ){
+                    errorArray.push("Password ")
+                }
+            }
+            if(errorArray.length>0){
+                
+                
+                let Div=document.createElement("div");
+                Div.classList.add("error");
+
+                let btnClose=document.createElement("button");
+                btnClose.textContent="X";
+                btnClose.onclick=()=>{Div.remove()};
+                setTimeout(()=>{
+                    Div.remove()
+                },2000)
+
+                let errorMessage = document.createElement("p");
+                if(errorArray[0].includes("aready")){
+                    errorMessage.textContent=errorArray[0];
+                }
+                else{
+                    errorMessage.textContent=`The ${errorArray[0]} Not Valid`;
+                }
+
+                Div.appendChild(btnClose);
+                Div.appendChild(errorMessage);
+
+                document.body.appendChild(Div);
+
+            }
+            else{
+                let Div=document.createElement("div");
+                Div.classList.add("success");
+
+                let btnClose=document.createElement("button");
+                btnClose.textContent="X";
+                btnClose.onclick=()=>{Div.remove()};
+
+                let errorMessage = document.createElement("p");
+                errorMessage.textContent=successMessage;
+
+                Div.appendChild(btnClose);
+                Div.appendChild(errorMessage);
+
+                document.body.appendChild(Div);
+                setTimeout(()=>{
+                    Div.remove()
+                },2000)
+
+            }
+        })
+
+
+
+
+

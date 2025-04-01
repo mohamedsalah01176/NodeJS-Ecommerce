@@ -1,0 +1,66 @@
+html(lang="en")
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet", href="/styles/categoryProducts/categoryProducts.css")
+    body
+        include ./component/header.pug
+        div.con
+            include ./component/navLinks.pug
+            h2=category
+            div.grid 
+                each item in categoryProducts 
+                        div.card
+                            a(href=`/products/${item._id}`).image
+                                img(src=item.thumbnail,alt="groceries")
+                                if item.discountPercentage.toFixed(0) > 0
+                                    div.discount #{item.discountPercentage.toFixed(0)}%
+                                
+                            button#addToCart(data-id=`${item._id}`,data-price=`${(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}`) Add To Cart
+                            h3= item.title.slice(0,50) + "..."
+                            div.conPrice
+                                p.newPrice  $#{(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}. 
+                                p.oldPrice $#{item.price}
+                            div 
+                                div.rating
+                                    -let NumberIteration=0
+                                    while NumberIteration++< +item.rating
+                                        i.fa.fa-star
+                                    |(#{item.minimumOrderQuantity})
+        include ./component/footer.pug
+    
+
+        script. 
+            let token=document.cookie.split("=")[1]
+            let addToCart=document.querySelectorAll("#addToCart");
+            if(token){
+                document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+            }else{
+                document.getElementsByClassName("profile")[0].classList.add("disapeare");
+                document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+            }
+            
+            addToCart.forEach((button)=>{
+                button.addEventListener("click",async(e)=>{
+                    let productId=button.getAttribute("data-id");
+                    console.log(productId)
+                    try{
+                        if(token){
+                            let res = await fetch("http://localhost:5000/api/cart",{
+                                method:"POST",
+                                headers:{
+                                    "Content-Type":"application/json",
+                                    "Authorization":`Bearer ${token}`,
+                                }, 
+                                body:JSON.stringify({productId:productId})
+                            })
+                            let data=await res.json();
+                            console.log(data);
+                        }else{
+                            window.location.href="/register";
+                        }
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                })
+            })

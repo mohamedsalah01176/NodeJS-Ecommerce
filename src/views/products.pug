@@ -1,0 +1,56 @@
+html(lang="en")
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet", href="/styles/products/products.css")
+    body 
+        include ./component/header.pug
+        div.con
+            include ./component/navLinks.pug
+            h2.container.categoryTitle beauty
+            include ./component/beauty.pug
+
+            h2.container.categoryTitle fragrances
+            include ./component/fragrances.pug
+
+            h2.container.categoryTitle groceries
+            include ./component/groceries.pug
+
+        include ./component/footer.pug
+
+
+    script. 
+        let token=document.cookie.split("=")[1]
+        let addToCart=document.querySelectorAll("#addToCart");
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+        }else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }
+        
+        addToCart.forEach((button)=>{
+            button.addEventListener("click",async(e)=>{
+                let productId=button.getAttribute("data-id");
+                let newPrice=button.getAttribute("data-price");
+                console.log(productId)
+                try{
+                    if(token){
+                        let res = await fetch("http://localhost:5000/api/cart",{
+                            method:"POST",
+                            headers:{
+                                "Content-Type":"application/json",
+                                "Authorization":`Bearer ${token}`,
+                            }, 
+                            body:JSON.stringify({productId:productId,newPrice:newPrice})
+                        })
+                        let data=await res.json();
+                        console.log(data);
+                    }else{
+                        window.location.href="/register";
+                    }
+                }
+                catch(err){
+                    console.log(err);
+                }
+            })
+        })

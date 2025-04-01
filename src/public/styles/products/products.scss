@@ -1,0 +1,42 @@
+@import "../utils/imports";
+
+body{ 
+    .con{
+        width: 80%;
+        margin: auto;
+        min-height: 90vh; 
+        margin-top: 50px;
+        background-color:$BGWhite ;
+        .categoryTitle{
+            // text-align: left;
+            margin: 20px 10px 20px;
+        }
+        .grid{
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(auto-fit,minmax(200px , 1fr));
+            gap: 30px;
+            margin: 10px 0px;
+            position: relative;
+            .seeMore{
+                padding: 10px ;
+                background-color: $ColorRed;
+                color: $ColorWhite;
+                position: absolute;
+                border: 2px solid $ColorRed;
+                border-radius: 10px;
+                top: -50px;
+                right: 10px;
+                cursor: pointer;
+                transition: .5s;
+                &:hover{
+                    background-color: $ColorWhite;
+                    border: 2px solid $ColorRed;
+                    color: $ColorRed;
+    
+                }
+            }
+            
+        }
+    }
+}
