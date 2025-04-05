@@ -1,0 +1,84 @@
+html(lang="en")
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet", href="/styles/NotFound/notFound.css")
+    body 
+        include ./component/header.pug
+        div.con
+            h1=title 
+            if (status == 404)
+                p Your visited page not Found, You go to home page 
+                a(href="/home") Back to Home Page
+
+        include ./component/footer.pug
+
+    script. 
+        let token=document.cookie.split("=")[1];
+        let productsSearch=document.getElementsByClassName("productsSearch");
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+        }else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }
+        document.querySelector(".logout button").onclick=()=>{
+            document.cookie=" token= ";
+            window.location.href="/register"
+        }
+
+
+        searchInput.addEventListener("keyup",async(e)=>{
+            productsSearch[0].innerHTML=""
+            let searchTitle=searchInput.value;
+            if(searchTitle){
+                productsSearch[0].style.display="block";
+            }else{
+                productsSearch[0].style.display="none";
+            }
+            try{
+                let res=await fetch("http://localhost:5000/api/search",{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    },
+                    body:JSON.stringify({title:searchTitle})
+                })
+                let data = await res.json();
+                console.log(data);
+                data.searchedProducts.forEach((item)=>{
+                    productsSearch[0].innerHTML+=`
+                        <li><a href='/products/${item._id}'>${item.title}</a></li>
+                    `
+                })
+            }
+            catch(err){
+                console.log(err);
+            }
+            if(e.key == "Enter"){
+                window.location.href=`/search/${searchTitle}`
+            }
+        })
+        
+        async function lengthCart(){
+            try{
+                let res= await fetch("http://localhost:5000/api/cart",{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    }, 
+                });
+                let data = await res.json();
+                if(data.status){
+                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                }
+                else{
+                    throw data.message
+                }
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+        lengthCart()

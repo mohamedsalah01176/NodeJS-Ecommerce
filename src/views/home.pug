@@ -1,20 +1,375 @@
+-let i=0;
+- categoryArray=[];
 html(lang="en")   
     head 
         include ./utils/headerLinks.pug
         link(rel="stylesheet",href="/styles/Home/home.css")
     body 
         include ./component/header.pug
-        h1.header Welcome Mohamed 
+        .con
+            include ./component/navLinks.pug
+        .heroSection 
+            .text
+                div 
+                    i.fa-solid.fa-apple-whole 
+                    span  iPhone 14 Series
+                h2 Up To 10% off Voucher
+                a(href="/products") 
+                    span Shop Now 
+                    i.fa-solid.fa-arrow-right
+            img(src="/assets/hero.webp", alt="iphone")
+        .con
+            div.TodayItem
+                div.conHeader 
+                    div.side
+                    h2 Today's
+                .flash 
+                    h2 Flash Sales 
+                    div.timer 
+                        div 
+                            p Days 
+                            div.counter#counterDays 
+                        |:
+                        div 
+                            p Hours 
+                            div.counter#counterHours 
+                        |:
+                        div 
+                            p Minutes 
+                            div.counter#counterMinute 
+                        |:
+                        div 
+                            p Seconds 
+                            div.counter#counterSecond  
+                div.grid 
+                    each item in products 
+                        if(item.discountPercentage>=18) 
+                            -i++
+                            div.STCard.card
+                                a(href=`/products/${item._id}`).image
+                                    img(src=item.thumbnail,alt="groceries")
+                                    if item.discountPercentage.toFixed(1) > 0
+                                        div.discount #{item.discountPercentage.toFixed(1)}%
+                                    
+                                button#addToCart(data-id=`${item._id}`,data-price=`${(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}`) Add To Cart
+                                h3= item.title.slice(0,50) + "..."
+                                div.conPrice
+                                    p.newPrice  $#{(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}. 
+                                    p.oldPrice $#{item.price}
+                                div 
+                                    div.rating
+                                        -let NumberIteration=0
+                                        while NumberIteration++< +item.rating
+                                            i.fa.fa-star
+                                        |(#{item.minimumOrderQuantity})
+            div.categoryItem
+                div.conHeader 
+                    div.side
+                    h2 Categories
+                h2 Browse By Category
+                .conCategory 
+                    each item in products 
+                        if(!categoryArray.includes(item.category))
+                            -categoryArray.push(item.category)
+                            a(href=`products/${item.category}`).box 
+                                h2=item.category
+            div.bestItem
+                div.conHeader 
+                    div.side
+                    h2 This Month
+                h2 Best Selling Products
+                div.grid 
+                    each item in products 
+                        if(item.minimumOrderQuantity>=30) 
+                            -i++
+                            div.STCard.card
+                                a(href=`/products/${item._id}`).image
+                                    img(src=item.thumbnail,alt="groceries")
+                                    if item.discountPercentage.toFixed(1) > 0
+                                        div.discount #{item.discountPercentage.toFixed(1)}%
+                                    
+                                button#addToCart(data-id=`${item._id}`,data-price=`${(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}`) Add To Cart
+                                h3= item.title.slice(0,50) + "..."
+                                div.conPrice
+                                    p.newPrice  $#{(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}. 
+                                    p.oldPrice $#{item.price}
+                                div 
+                                    div.rating
+                                        -let NumberIteration=0
+                                        while NumberIteration++< +item.rating
+                                            i.fa.fa-star
+                                        |(#{item.minimumOrderQuantity})
+            div.newItem
+                div.conHeader 
+                    div.side
+                    h2 Featured
+                h2 New Arrival
+                div.img1
+                    .text
+                        h2 PlayStation 5
+                        p Black and White Version of the PS5 coming out on sale
+                        a(href="/products") 
+                            span Shop Now 
+                            i.fa-solid.fa-arrow-right  
+                    img(src="/assets/pes.png", alt="img")
+                .conImg 
+                    .img2 
+                        .text
+                            h2 Women's Collection
+                            p Featured woman collections that give you another vibe 
+                            a(href="/products") 
+                                span Shop Now 
+                                i.fa-solid.fa-arrow-right  
+                        img(src="/assets/cp.jpeg", alt="img")
+                    .img3 
+                        .text
+                            h2 Speakers
+                            p Amazon wireless speakers
+                            a(href="/products") 
+                                span Shop Now 
+                                i.fa-solid.fa-arrow-right  
+                        img(src="/assets/mc.png", alt="img")
+                    .img4 
+                        .text
+                            h2 Perfume
+                            p GUCCI INTENSE OUD EDP
+                            a(href="/products") 
+                                span Shop Now 
+                                i.fa-solid.fa-arrow-right  
+                        img(src="/assets/pr.jpg", alt="img")
+            
+            .gridContact 
+                .box 
+                    .iconCon 
+                        i.fa-solid.fa-shop
+                    h3 Free and fast delivery 
+                    p free deleivery for all orders over $140           
+                .box 
+                    .iconCon 
+                        i.fa-solid.fa-shop
+                    h3 24/7 customer service 
+                    p Friendly 24/7 customer support          
+                .box 
+                    .iconCon 
+                        i.fa-solid.fa-shop
+                    h3 Money Back Guarantee
+                    p we reurn money within 30 days        
+
+
+
+
+
         include ./component/footer.pug
     
 
 
 
     script. 
-        let token=document.cookie.split("=")[1]
+        let token=document.cookie.split("=")[1];
+        let addToCart=document.querySelectorAll("#addToCart");
+        let searchInput=document.querySelector(".search input");
+        let productsSearch=document.getElementsByClassName("productsSearch");
+        let counterDaysDiv = document.getElementById("counterDays");
+        let counterHoursDiv = document.getElementById("counterHours");
+        let counterMinuteDiv= document.getElementById("counterMinute");
+        let counterSecondDiv = document.getElementById("counterSecond");
+        let strDate="Thu Apr 03 2025 20:05:02 GMT+0200 (Eastern European Standard Time)"
+        let dateFixed =new Date(strDate);
+        const baseURL = !{JSON.stringify(baseURL)};
+
+        let nowTime = new Date(); 
+        dateFixed.setDate(7)
+        let diffDate=dateFixed - nowTime;
+        counterSecondDiv.innerText=`0${Math.floor(diffDate/1000)%60}`;
+        counterMinuteDiv.innerText=`${Math.floor(diffDate/(1000*60))%60}`;
+        counterHoursDiv.innerText=`${Math.floor(diffDate/(1000*60*60))%24}`;
+        counterDaysDiv.innerText=`${Math.floor(diffDate/(1000*60*60*24))}`;
+        let counterSecond=Math.floor(diffDate/1000)%60;
+        let counterMinute=Math.floor(diffDate/(1000*60))%60;
+        let counterHours=Math.floor(diffDate/(1000*60*60))%24;
+        let counterDays=Math.floor(diffDate/(1000*60*60*24));
+        //- diffDate=0;
+        if(diffDate<=0){
+            document.getElementsByClassName("TodayItem")[0].remove()
+        }
+
         if(token){
             document.getElementsByClassName("singIn")[0].classList.add("disapeare");
-        }else{
+            document.getElementsByClassName("profile")[0].classList.remove("disapeare");
+            document.getElementsByClassName("logout")[0].classList.remove("disapeare");
+        }
+        else{
             document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("logout")[0].classList.add("disapeare");
             document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
         }
+        document.querySelector(".logout button").onclick=()=>{
+            document.cookie=" token= ";
+            window.location.href="/register"
+        }
+
+        addToCart.forEach((button)=>{
+            button.addEventListener("click",async(e)=>{
+                let productId=button.getAttribute("data-id");
+                let newPrice=button.getAttribute("data-price");
+                console.log(productId)
+                try{
+                    if(token){
+                        let res = await fetch(`${baseURL}/api/cart`,{
+                            method:"POST",
+                            headers:{
+                                "Content-Type":"application/json",
+                                "Authorization":`Bearer ${token}`,
+                            }, 
+                            body:JSON.stringify({productId:productId,newPrice:newPrice})
+                        })
+                        let data=await res.json();
+                        console.log(data);
+                    }else{
+                        window.location.href="/register";
+                    }
+                }
+                catch(err){
+                    console.log(err);
+                }
+                lengthCart()
+            })
+        })
+
+        searchInput.addEventListener("keyup",async(e)=>{
+            productsSearch[0].innerHTML=""
+            let searchTitle=searchInput.value;
+            if(searchTitle){
+                productsSearch[0].style.display="block";
+            }else{
+                productsSearch[0].style.display="none";
+            }
+            try{
+                let res=await fetch(`${baseURL}/api/search`,{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    },
+                    body:JSON.stringify({title:searchTitle})
+                })
+                let data = await res.json();
+                console.log(data);
+                data.searchedProducts.forEach((item)=>{
+                    productsSearch[0].innerHTML+=`
+                        <li><a href='/products/${item._id}'>${item.title}</a></li>
+                    `
+                })
+            }
+            catch(err){
+                console.log(err);
+            }
+            if(e.key == "Enter"){
+                window.location.href=`/search/${searchTitle}`
+            }
+        })
+
+        let setIntervalSecond=setInterval(()=>{
+            if(counterDays>0 || counterHours>0 || counterMinute >0){
+                if(counterSecond>0){
+                    counterSecond--;
+                    
+                }
+                else{
+                    counterSecond=59;
+                }
+                if(counterSecond>9){
+                        counterSecondDiv.innerText=counterSecond;
+                }
+                else{
+                    counterSecondDiv.innerText=`0${counterSecond}`;
+                }
+            }
+            else{
+                    counterHoursDiv.innerText=`00`;
+                    clearInterval(counterSecond)
+            }
+        },1000)
+        let setIntervalMenites=setInterval(()=>{
+            if(counterDays>0 || counterHours>0){
+                if(counterMinute>0){
+                    counterMinute--;
+                }
+                else{
+                    counterMinute=59;
+                }
+                if(counterMinute>9){
+                    counterMinuteDiv.innerText=counterMinute;
+                }
+                else{
+                    counterMinuteDiv.innerText=`0${counterMinute}`;
+                }
+            }
+            else{
+                    counterMinute=0;
+                    counterMinuteDiv.innerText=`00`;
+                    clearInterval(setIntervalMenites)
+            }
+        },1000 *60)
+        let setIntervalHours=setInterval(()=>{
+            if(counterDays>0){
+                if(counterHours>0){
+                    counterHours--;
+                }
+                else{
+                    counterHours=23;
+                }
+                if(counterHours>9 ){
+                        counterHoursDiv.innerText=counterHours;
+                }
+                else{
+                    counterHoursDiv.innerText=`0${counterHours}`;
+                }
+            }
+            else{
+                    counterHours=0;
+                    counterHoursDiv.innerText=`00`;
+                    clearInterval(setIntervalHours)
+            }
+        },1000 * 60 * 60)
+        let setIntervalDays=setInterval(()=>{
+            if(counterDays>0){
+                counterDays--;
+            }
+            else{
+                counterDays=0;
+            }
+            if(counterDays>9){
+                    counterDaysDiv.innerText=counterDays;
+            }
+            else{
+                counterDaysDiv.innerText=`0${counterDays}`;
+            }
+        },1000 * 60 * 60 * 24)
+
+        if(counterDays <=0){
+            clearInterval(setIntervalDays);
+        }
+        
+        async function lengthCart(){
+            try{
+                let res= await fetch(`${baseURL}/api/cart`,{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    }, 
+                });
+                let data = await res.json();
+                if(data.status){
+                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                }
+                else{
+                    throw data.message
+                }
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+        lengthCart()

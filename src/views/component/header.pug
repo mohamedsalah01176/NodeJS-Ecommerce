@@ -8,7 +8,7 @@ nav
         a(href="/").logo Shopinng 
         ul.links 
             li 
-                a(href="/") Home
+                a(href="/home") Home
             li 
                 a(href="/products") Products
             li 
@@ -17,9 +17,13 @@ nav
                 a(href="/register") Sing Up 
             li.profile 
                 a(href="/profile") Profile
+            li.logout  
+                button  logout
         div 
             div.search
+                ul.productsSearch 
                 input(type="text",placeholder="We have 1000 Products..")
                 i.fa-solid.fa-magnifying-glass
             a#cartLink(href="/cart")  
+                .counter  
                 i.fa-solid.fa-cart-plus

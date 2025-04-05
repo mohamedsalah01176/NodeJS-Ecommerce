@@ -30,13 +30,20 @@ html(lang="en")
     
 
         script. 
-            let token=document.cookie.split("=")[1]
+            let token=document.cookie.split("=")[1];
+            let searchInput=document.querySelector(".search input");
             let addToCart=document.querySelectorAll("#addToCart");
+            let productsSearch=document.getElementsByClassName("productsSearch");
+            const baseURL = !{JSON.stringify(baseURL)};
             if(token){
                 document.getElementsByClassName("singIn")[0].classList.add("disapeare");
             }else{
                 document.getElementsByClassName("profile")[0].classList.add("disapeare");
                 document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+            }
+            document.querySelector(".logout button").onclick=()=>{
+                document.cookie=" token= ";
+                window.location.href="/register"
             }
             
             addToCart.forEach((button)=>{
@@ -45,7 +52,7 @@ html(lang="en")
                     console.log(productId)
                     try{
                         if(token){
-                            let res = await fetch("http://localhost:5000/api/cart",{
+                            let res = await fetch(`${baseURL}/api/cart`,{
                                 method:"POST",
                                 headers:{
                                     "Content-Type":"application/json",
@@ -62,5 +69,61 @@ html(lang="en")
                     catch(err){
                         console.log(err);
                     }
+                    lengthCart()
                 })
             })
+            searchInput.addEventListener("keyup",async(e)=>{
+                productsSearch[0].innerHTML=""
+                let searchTitle=searchInput.value;
+                if(searchTitle){
+                    productsSearch[0].style.display="block";
+                }else{
+                    productsSearch[0].style.display="none";
+                }
+                try{
+                    let res=await fetch(`${baseURL}/api/search`,{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":`Bearer ${token}`,
+                        },
+                        body:JSON.stringify({title:searchTitle})
+                    })
+                    let data = await res.json();
+                    console.log(data);
+                    data.searchedProducts.forEach((item)=>{
+                        productsSearch[0].innerHTML+=`
+                            <li><a href='/products/${item._id}'>${item.title}</a></li>
+                        `
+                    })
+                }
+                catch(err){
+                    console.log(err);
+                }
+                if(e.key == "Enter"){
+                    window.location.href=`/search/${searchTitle}`
+                }
+            })
+
+            async function lengthCart(){
+                try{
+                    let res= await fetch(`${baseURL}/api/cart`,{
+                        method:"GET",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":`Bearer ${token}`,
+                        }, 
+                    });
+                    let data = await res.json();
+                    if(data.status){
+                        document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                    }
+                    else{
+                        throw data.message
+                    }
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }
+            lengthCart()

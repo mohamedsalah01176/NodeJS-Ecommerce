@@ -26,45 +26,13 @@ export class ProductsService{
     findAll(){
         return this.products;
     }
-
     async returProductById(id:number){
         return await ProductModel.findOne({_id:id});
     }
 
-    filterProducts(querySTR:string):IProduct[] | undefined{
-        let valueQuery=querySTR?.split(",");
-        let newProduct=[];
-        if(valueQuery){
-            newProduct= this.products.map((product:IProduct,index:number)=>{
-                let filterProducts:any={};
-                
-                valueQuery.forEach((val:string)=>{
-                    filterProducts[val]=product[val as keyof IProduct];
-                })
-                return {_id:product._id,...filterProducts};
-            })
-            return newProduct;
-        }    
-    }
     filterById(filterId:number){
         let product=this.products.find(item=>item._id == filterId) 
         return product
-    }
-    addProduct(productBody:IBodyProduct){
-        let newProduct={_id:this.products.length + 1,...productBody}
-        let newArray:IProduct[]=[...this.products,newProduct]
-        // this.productsService.findAll().push(newProduct);
-        let pathData=path.join(__dirname,"../data/products.json");
-        fs.writeFile(pathData,JSON.stringify(newArray),"utf-8",(err)=>{
-            console.log(err);
-        })
-        return newProduct ;
-    }
-    updataProductByIndex(bodyProduct:IBodyProduct,indexOfProduct:number){
-        return  this.products[indexOfProduct]={...this.products[indexOfProduct],...bodyProduct};
-    }
-    deleteProductById(id:number){
-        return this.products.filter(item=>item._id !== id)
     }
     relatedProductsFun(id:number){
         let product=this.filterById(id);
@@ -91,7 +59,8 @@ export class ProductsService{
             if(foundProduct){
                 await CartModel.updateOne({title:foundProduct.title},{$inc:{quantity:1}})
             }else{
-                await CartModel.create({userId,newPrice,...currentProduct?.toObject(),quantity:1})
+                let newProduct=new CartModel({userId,newPrice,...currentProduct?.toObject(),quantity:1});
+                await newProduct.save()
             }
             return{
                 sattus:"success", 
@@ -116,7 +85,7 @@ export class ProductsService{
         try{
             let decodeToken:any=jwt.verify(token,process.env.SECTERTOKENKEY as string);
             let userId=decodeToken.id
-            let products=await CartModel.find({userId:userId},{__v:0,_id:0});
+            let products=await CartModel.find({userId:userId},{__v:0});
             return {
                 status:"success",
                 products,
@@ -157,6 +126,102 @@ export class ProductsService{
                 message:"Coupon Not Valid"
             };
             
+        }
+    }
+    async handleDeleteProduct(token:string,productId:number){
+        if(!token){
+            return{
+                status:"fail",
+                message:"token Not Found"
+            }
+        }
+        try{
+            let decodeToken:any= jwt.verify(token,process.env.SECTERTOKENKEY as string);
+            let userId=decodeToken.id
+            console.log(userId)
+            let deleteProduct=await CartModel.deleteOne({_id:productId,userId:userId});
+            console.log(deleteProduct)
+            if(deleteProduct.deletedCount>0){
+                return{
+                    status:"success",
+                    message:"products Deleted"
+                }
+            }
+            if(!deleteProduct){
+                return{
+                    status:"fail",
+                    message:"products Not Found"
+                }
+            }
+        }
+        catch(err){
+            return{
+                status:"fail",
+                message:err
+            }
+        }
+    }
+    async handleUpdateProduct(token:string,productId:number,newQuaintity:number){
+        if(!token){
+            return{
+                status:"fail",
+                message:"token Not Found"
+            }
+        }
+        if(newQuaintity<=5){
+            try{
+                let decodeToken:any= jwt.verify(token,process.env.SECTERTOKENKEY as string);
+                let userId=decodeToken.id
+                let updatedProduct=await CartModel.updateOne({_id:productId,userId:userId},{$set:{quantity:newQuaintity}});
+                console.log(updatedProduct)
+                if(updatedProduct.modifiedCount>0){ 
+                    return{
+                        status:"success",
+                        message:"products updated"
+                    }
+                }
+                if(!updatedProduct){
+                    return{
+                        status:"fail",
+                        message:"products Not Found"
+                    }
+                }
+            }
+            catch(err){
+                return{
+                    status:"fail",
+                    message:err
+                }
+            }
+        }else{
+            return{
+                status:"fail",
+                message:"the store contain only 5 items"
+            }
+        }
+    }
+    
+    handleSearchProduct(title:string){
+        try{
+            let searchedProducts=this.products.filter((item)=>item.title.toLowerCase().includes(title.toLowerCase()))
+            if(searchedProducts.length>0 ){
+                return{
+                    status:"success",
+                    searchedProducts:searchedProducts,
+                }
+            }
+            else{
+                return{
+                    status:"fail",
+                    searchedProducts:`The ${title} Not Found`,
+                }
+            }
+        }
+        catch(err){
+            return{
+                status:"fail",
+                searchedProducts:err,
+            }
         }
     }
 }   

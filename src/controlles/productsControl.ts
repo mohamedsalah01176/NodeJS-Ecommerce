@@ -7,73 +7,22 @@ import {Request,Response} from "express"
 export class ProductsControl{
     constructor(private productsService:ProductsService){
     }
-    getAllProducts(req:Request,res:Response):void{
-        // res.status(200).json( this.productsService.findAll())
-        let querySTR=req.query.filter as string; 
-        if(querySTR){
-            res.status(200).json(this.productsService.filterProducts(querySTR));
-        }else{
-            res.status(200).json(this.productsService.findAll());
-        }
-    }
-    getProductById(req:Request,res:Response){
-        let id= +req.params.id;
-        if(isNaN(id)){
-            res.status(400).send({status:"Fail",message:"the ID Product Not valid"});
-        } 
-        let foundProduct=this.productsService.filterById(id);
-        if(foundProduct){
-            res.status(200).send({status:"Success",data:foundProduct});
-        }else{
-            res.status(404).send({status:"Fail",message:"the ID Product Not Found"});
-        }
-    }
-    createProduct(req:Request,res:Response){
-        let productBody=req.body;
-        if(!productBody){
-            res.status(400).send({status:"Fail",message:"the title and price require"});
-        }else{
-            let newProducts=this.productsService.addProduct(productBody)
-            res.status(201).send({status:"Success",data:newProducts});
-        }
-    }
-    updataProduct(req:Request,res:Response){
-        let id:number= +req.params.id;
-        if(isNaN(id)){
-            res.status(400).send({status:"fail",message:"the product id is not valid"});
-        }
-        let bodyProduct=req.body;
-        let indexOfProduct:number=this.productsService.findAll().findIndex((item)=>item._id == id);
-        if(indexOfProduct !== -1){
-            // we write "id-1" to access the current index of product
-            this.productsService.updataProductByIndex(bodyProduct,indexOfProduct)
-            res.status(200).send({status:"Success",message:"the product updated"});
-        }else{
-            res.status(404).send({status:"fail",message:"the product id not Found"});
-        }
-    }
-    deletProduct(req:Request,res:Response){
-        let id:number= +req.params.id;
-        if(isNaN(id)){
-            res.status(400).send({status:"fail",message:"the product id is not valid"});
-        }
-        let foundProduct:IProduct | undefined=this.productsService.findAll().find((item)=>item._id == id);
-        if(foundProduct){
-            let filteredProducts:IProduct[]=this.productsService.deleteProductById(id);
-            res.status(200).send({status:"Success",data:filteredProducts});
-        }else{
-            res.status(404).send({status:"fail",message:"the product id is not Found"});
-        }
-    }
     renderHomePage(req:Request,res:Response){
-        res.render("home",{title:"Home Page"})
+        console.log(process.env.BASEURL)
+        res.render("home",{
+            title:"Home Page",
+            url:"Home",
+            products: this.productsService.findAll(),
+            baseURL:process.env.BASEURL
+        })
     }
     renderAllProducts(req:Request,res:Response){
-
         res.render("products",{
-            title:"All Products",
+            title:"Products Page",
             products: this.productsService.findAll(),
-            url:req.url
+            url:`Home/${req.url}`,
+            baseURL:process.env.BASEURL
+
         })
     }
     renderSingleProductpage(req:Request,res:Response){
@@ -82,32 +31,64 @@ export class ProductsControl{
             res.render("singleProduct",{
                 product:this.productsService.filterById(+id),
                 relatedProducts:this.productsService.relatedProductsFun(+id),
-                url:req.url
+                url:`Home/${req.url}`,
+                title:"Home page",
+                baseURL:process.env.BASEURL
+
             });
         }
         else{
             res.render("categoryProduct",{
                 category:id,
-                url:req.url,
-                categoryProducts:this.productsService.getCategoryProducts(id)
+                url:`Home/${req.url}`,
+                categoryProducts:this.productsService.getCategoryProducts(id),
+                title:"Category page",
+                baseURL:process.env.BASEURL
             })
         }
+    }
+    renderCartPage(req:Request,res:Response){
+        res.render("cart",{url:`Home/${req.url}`,title:"Cart page",baseURL:process.env.BASEURL});
+    }
+    renderSearchedProducts(req:Request,res:Response){
+        console.log(req.params.searchTitle)
+        let resSer:any=this.productsService.handleSearchProduct(req.params.searchTitle);
+        // console.log(resSer)
+        if(resSer.status === "success"){
+            res.render("searchedProducts",{
+                searchedProducts:resSer.searchedProducts,
+                url:`Home/${req.url}`,
+                title:"Searched products",
+                baseURL:process.env.BASEURL
+
+            })
+        }
+        if(resSer.status === "fail"){
+            res.status(404).render("error",{
+                resSer:resSer,
+                title:"Not Found products",
+                baseURL:process.env.BASEURL
+            })
+        }
+    }
+    renderAboutPage(req:Request,res:Response){
+        res.render("about",{
+            title:"About page",
+            url:`Home/${req.url}`,
+            baseURL:process.env.BASEURL
+        })
     }
 
     async addToCart(req:Request,res:Response) { 
         let token:string =req.headers["authorization"]?.split(" ")[1] as string;
         let resSer=await this.productsService.handelAddToCart(req.body.productId,req.body.newPrice,token);
-        console.log(resSer)
         if(resSer.status === "success"){
-            res.status(200).send(resSer)
+            res.status(200).send({resSer})
         }
         
         if(resSer.status === "fail"){
-            res.status(400).send(resSer)
+            res.status(400).send({resSer})
         } 
-    }
-    renderCartPage(req:Request,res:Response){
-        res.render("cart",{url:`Home/${req.url}`});
     }
     async getCartProducs(req:Request,res:Response){
         let token:string =req.headers["authorization"]?.split(" ")[1] as string;
@@ -122,8 +103,6 @@ export class ProductsControl{
     async checkCoupon(req:Request,res:Response){
         let token:string =req.headers["authorization"]?.split(" ")[1] as string;
         let coupon=req.body.coupon;
-        // let coupon="999";
-        console.log(coupon)
         let resSer=await this.productsService.handleCpoupon(token,coupon);
         if(resSer.status === "success"){
             res.send(resSer)
@@ -132,5 +111,35 @@ export class ProductsControl{
             res.status(400).send(resSer)
         }
     }
-    
+    async deleteCartProduc(req:Request,res:Response){
+        let token=req.headers["authorization"]?.split(" ")[1] as string
+        let resSer:any=await this.productsService.handleDeleteProduct(token,req.body.productId);
+        if(resSer.status === "success"){
+            res.send(resSer)
+        }
+        if(resSer.status === "fail"){
+            res.status(400).send(resSer)
+        }
+        
+    }
+    async updateCartProduc(req:Request,res:Response){
+        let token=req.headers["authorization"]?.split(" ")[1] as string
+        let resSer:any=await this.productsService.handleUpdateProduct(token,req.body.productId,req.body.newQuaintity);
+        if(resSer.status === "success"){
+            res.send(resSer)
+        }
+        if(resSer.status === "fail"){
+            res.status(400).send(resSer)
+        }
+    }
+    searchProducts(req:Request,res:Response){
+        let searchTitle=req.body.title;
+        let resSer:any= this.productsService.handleSearchProduct(searchTitle);
+        if(resSer.status === "success"){
+            res.send(resSer)
+        }
+        if(resSer.status === "fail"){
+            res.status(404).send(resSer)
+        }
+    }
 }

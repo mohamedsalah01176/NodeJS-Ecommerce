@@ -1,0 +1,170 @@
+html(lang="en")   
+    head 
+        include ./utils/headerLinks.pug
+        link(rel="stylesheet",href="/styles/about/about.css")
+    body 
+        include ./component/header.pug
+        .conNavLinks 
+            include ./component/navLinks.pug
+        .section1 
+            .text 
+                h1 Our Story 
+                p Lorem ipsum dolor sit, amet consectetur adipisicing elit. Et minima magnam ad corrupti expedita eaque officiis doloribus minus ipsum! Facere necessitatibus quisquam laborum. Labore, laudantium! Eum sapiente sit rerum aperiam?
+                p Lorem ipsum dolor sit, amet consectetur adipisicing elit. Et minima magnam ad corrupti expedita eaque officiis doloribus minus ipsum! Facere necessitatibus quisquam laborum.
+            img(src="../assets/shpping.jpeg", alt="shopping")
+        .gridSecction 
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-shop 
+                p 10.5K
+                p Sallers active our site
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-dollar-sign
+                p 33K
+                p Mopnthly Produduct Sale
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-basket-shopping
+                p 45.5K
+                p Customer active in our site
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-comments-dollar
+                p 25K
+                p Anual gross in our site
+        .gridPerons 
+            .box
+                .conImg 
+                    img(src="../assets/person1.jpeg", alt="imge")
+                .text 
+                    h3 Tom Cruise 
+                    p Founder & Chairman 
+                    .icons 
+                        a(href="#")  
+                            i.fa-brands.fa-twitter
+                        a(href="#") 
+                            i.fa-brands.fa-instagram
+                        a(href="#") 
+                            i.fa-brands.fa-linkedin-in
+            .box
+                .conImg 
+                    img(src="../assets/person2.jpg", alt="imge")
+                .text 
+                    h3 Divid Cruise 
+                    p Managing Director 
+                    .icons 
+                        a(href="#")  
+                            i.fa-brands.fa-twitter
+                        a(href="#") 
+                            i.fa-brands.fa-instagram
+                        a(href="#") 
+                            i.fa-brands.fa-linkedin-in
+            .box
+                img(src="../assets/person4.jpg", alt="imge")
+                .text 
+                    h3 Will Smith
+                    p Product Designer 
+                    .icons
+                        a(href="#")  
+                            i.fa-brands.fa-twitter
+                        a(href="#") 
+                            i.fa-brands.fa-instagram
+                        a(href="#") 
+                            i.fa-brands.fa-linkedin-in
+        .gridContact 
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-shop
+                h3 Free and fast delivery 
+                p free deleivery for all orders over $140           
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-shop
+                h3 24/7 customer service 
+                p Friendly 24/7 customer support          
+            .box 
+                .iconCon 
+                    i.fa-solid.fa-shop
+                h3 Money Back Guarantee
+                p we reurn money within 30 days        
+        include ./component/footer.pug
+
+
+
+
+
+    script. 
+        let token=document.cookie.split("=")[1]
+        let searchInput=document.querySelector(".search input");
+        let addToCart=document.querySelectorAll("#addToCart");
+        let productsSearch=document.getElementsByClassName("productsSearch");
+
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+            document.getElementsByClassName("profile")[0].classList.remove("disapeare");
+            document.getElementsByClassName("logout")[0].classList.remove("disapeare");
+        }
+        else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("logout")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }
+        document.querySelector(".logout button").onclick=()=>{
+            document.cookie=" token= ";
+            window.location.href="/register"
+        }
+        searchInput.addEventListener("keyup",async(e)=>{
+            productsSearch[0].innerHTML=""
+            let searchTitle=searchInput.value;
+            if(searchTitle){
+                productsSearch[0].style.display="block";
+            }else{
+                productsSearch[0].style.display="none";
+            }
+            try{
+                let res=await fetch("http://localhost:5000/api/search",{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    },
+                    body:JSON.stringify({title:searchTitle})
+                })
+                let data = await res.json();
+                console.log(data);
+                data.searchedProducts.forEach((item)=>{
+                    productsSearch[0].innerHTML+=`
+                        <li><a href='/products/${item._id}'>${item.title}</a></li>
+                    `
+                })
+            }
+            catch(err){
+                console.log(err);
+            }
+            if(e.key == "Enter"){
+                window.location.href=`/search/${searchTitle}`
+            }
+        })
+        async function lengthCart(){
+            try{
+                let res= await fetch("http://localhost:5000/api/cart",{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    }, 
+                });
+                let data = await res.json();
+                if(data.status){
+                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                }
+                else{
+                    throw data.message
+                }
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+        lengthCart()

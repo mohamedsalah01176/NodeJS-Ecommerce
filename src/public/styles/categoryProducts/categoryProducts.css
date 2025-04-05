@@ -146,6 +146,20 @@ nav .secondHeader .links li a {
 nav .secondHeader .links li a:hover {
   border-bottom: 2px solid #ccc;
 }
+nav .secondHeader .links li button {
+  background-color: white;
+  font-size: 18px;
+  color: #de3434;
+  text-decoration: none;
+  padding: 5px;
+  border: none;
+  border-bottom: 2px solid white;
+  transition: 0.5s;
+  cursor: pointer;
+}
+nav .secondHeader .links li button:hover {
+  border-bottom: 2px solid #ccc;
+}
 nav .secondHeader .links .disapeare {
   display: none;
 }
@@ -155,6 +169,7 @@ nav .secondHeader div {
   align-items: center;
   justify-content: space-between;
   width: 300px;
+  position: relative;
 }
 nav .secondHeader div .search {
   background-color: rgba(204, 204, 204, 0.8117647059);
@@ -166,8 +181,50 @@ nav .secondHeader div .search input {
   border: none;
   outline: none;
 }
+nav .secondHeader div .search .productsSearch {
+  position: absolute;
+  top: 35px;
+  left: 0px;
+  background-color: rgba(239, 239, 239, 0.9411764706);
+  padding: 10px;
+  list-style: none;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: scroll;
+  z-index: 10;
+  display: none;
+  border-radius: 5px;
+}
+nav .secondHeader div .search .productsSearch li {
+  padding: 15px 15px 10px;
+  cursor: pointer;
+}
+nav .secondHeader div .search .productsSearch li a {
+  color: black;
+}
+nav .secondHeader div .search .productsSearch li:not(:last-child) {
+  border-bottom: 1px solid #dcdcdc;
+}
+nav .secondHeader div #cartLink {
+  position: relative;
+}
+nav .secondHeader div #cartLink .counter {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  padding: 5opx;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 nav .secondHeader div #cartLink .fa-cart-plus {
   color: black;
+  font-size: 22px;
 }
 
 footer {
@@ -179,7 +236,7 @@ footer .conFooter {
   width: 90%;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px 10px;
   padding: 60px 0px 40px;
   text-align: center;

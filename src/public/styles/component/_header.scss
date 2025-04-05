@@ -36,15 +36,31 @@ nav{
             list-style: none;
             display: flex;
             gap: 20px;
-            li a{
-                font-size: 18px;
-                color: $ColorBlack;
-                text-decoration: none;
-                padding: 5px;
-                border-bottom:2px solid white;
-                transition: .5s;
-                &:hover{
-                    border-bottom:2px solid #ccc;
+            li {
+                a{
+                    font-size: 18px;
+                    color: $ColorBlack;
+                    text-decoration: none;
+                    padding: 5px;
+                    border-bottom:2px solid white;
+                    transition: .5s;
+                    &:hover{
+                        border-bottom:2px solid #ccc;
+                    }
+                }
+                button{
+                    background-color: white;
+                    font-size: 18px;
+                    color: $ColorRed;
+                    text-decoration: none;
+                    padding: 5px;
+                    border: none;
+                    border-bottom:2px solid white;
+                    transition: .5s;
+                    cursor: pointer;
+                    &:hover{
+                        border-bottom:2px solid #ccc;
+                    }
                 }
             }
             .disapeare{
@@ -57,20 +73,61 @@ nav{
             align-items: center;
             justify-content: space-between;
             width: 300px;
+            position: relative;
             .search{
                 background-color: $BGCCC;
                 padding: 10px;
                 border-radius: 10px;
-                
                 input{
                     background-color: #cccccc1c;
                     border: none;
                     outline: none;
                 }
+                .productsSearch{
+                    position: absolute;
+                    top: 35px;
+                    left: 0px;
+                    background-color: #efefeff0;
+                    padding: 10px;
+                    list-style: none;
+                    width: 300px;
+                    max-height: 400px;
+                    overflow-y:scroll;
+                    z-index: 10;
+                    display: none;
+                    border-radius: 5px;
+                    li{
+                        padding: 15px 15px 10px;
+                        cursor: pointer;
+                        a{
+                            color: black;
+                        }
+                        &:not(:last-child){
+                            border-bottom: 1px solid #dcdcdc;
+                        }
+                    }
+                    
+                }
             }
             #cartLink{
+                position: relative;
+                .counter{
+                    position: absolute;
+                    top: -10px;
+                    right: -10px;
+                    border-radius:50% ;
+                    background-color: black;
+                    color: white;
+                    padding: 5opx;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
                 .fa-cart-plus{
                     color: black;
+                    font-size: 22px;
                 }
             }
         }

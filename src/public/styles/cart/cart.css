@@ -146,6 +146,20 @@ nav .secondHeader .links li a {
 nav .secondHeader .links li a:hover {
   border-bottom: 2px solid #ccc;
 }
+nav .secondHeader .links li button {
+  background-color: white;
+  font-size: 18px;
+  color: #de3434;
+  text-decoration: none;
+  padding: 5px;
+  border: none;
+  border-bottom: 2px solid white;
+  transition: 0.5s;
+  cursor: pointer;
+}
+nav .secondHeader .links li button:hover {
+  border-bottom: 2px solid #ccc;
+}
 nav .secondHeader .links .disapeare {
   display: none;
 }
@@ -155,6 +169,7 @@ nav .secondHeader div {
   align-items: center;
   justify-content: space-between;
   width: 300px;
+  position: relative;
 }
 nav .secondHeader div .search {
   background-color: rgba(204, 204, 204, 0.8117647059);
@@ -166,8 +181,50 @@ nav .secondHeader div .search input {
   border: none;
   outline: none;
 }
+nav .secondHeader div .search .productsSearch {
+  position: absolute;
+  top: 35px;
+  left: 0px;
+  background-color: rgba(239, 239, 239, 0.9411764706);
+  padding: 10px;
+  list-style: none;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: scroll;
+  z-index: 10;
+  display: none;
+  border-radius: 5px;
+}
+nav .secondHeader div .search .productsSearch li {
+  padding: 15px 15px 10px;
+  cursor: pointer;
+}
+nav .secondHeader div .search .productsSearch li a {
+  color: black;
+}
+nav .secondHeader div .search .productsSearch li:not(:last-child) {
+  border-bottom: 1px solid #dcdcdc;
+}
+nav .secondHeader div #cartLink {
+  position: relative;
+}
+nav .secondHeader div #cartLink .counter {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  padding: 5opx;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 nav .secondHeader div #cartLink .fa-cart-plus {
   color: black;
+  font-size: 22px;
 }
 
 footer {
@@ -179,7 +236,7 @@ footer .conFooter {
   width: 90%;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px 10px;
   padding: 60px 0px 40px;
   text-align: center;
@@ -267,48 +324,131 @@ footer .crt {
   color: black;
 }
 
-.con {
+.notification, body .error {
+  position: fixed;
+  top: 50px;
+  right: 10px;
+  min-width: 200px;
+  padding: 0px 10px;
+  color: white;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.5s;
+  padding: 7px 11px;
+}
+.notification button, body .error button {
+  border: 0;
+  color: white;
+  font-size: 25px;
+  font-weight: bold;
+  transition: 0.5s;
+  cursor: pointer;
+}
+.notification button:hover, body .error button:hover {
+  color: rgb(125, 4, 4);
+  transform: rotate(180deg);
+}
+
+body .error {
+  background-color: red;
+  z-index: 10;
+  gap: 10px;
+}
+body .error p {
+  font-size: 19px;
+  text-align: center;
+}
+body .error button {
+  background-color: red;
+}
+body .con {
   width: 100%;
   margin: 50px auto 0;
 }
 @media (min-width: 650px) {
-  .con {
+  body .con {
     width: 75%;
   }
 }
-.con .conTable {
+body .con .conTable {
   overflow-x: scroll;
 }
-.con .conTable table {
+body .con .conTable table {
   margin-top: 40px;
   border-collapse: separate;
   border-spacing: 0px 30px;
   width: 100%;
 }
-.con .conTable table thead {
+body .con .conTable table thead {
   box-shadow: 5px 5px 10px rgba(204, 204, 204, 0.7254901961);
 }
-.con .conTable table thead td {
+body .con .conTable table thead td {
   padding: 15px 30px;
 }
-.con .conTable table tbody tr {
+body .con .conTable table tbody tr {
   box-shadow: 5px 5px 10px rgba(204, 204, 204, 0.7254901961);
 }
-.con .conTable table tbody td {
+body .con .conTable table tbody tr .conBtn {
+  display: flex;
+  gap: 7px;
+}
+body .con .conTable table tbody tr .conBtn .deleteBtn {
+  padding: 7px 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+  color: white;
+  background-color: #de3434;
+  border-radius: 5px;
+  border: 1px solid #de3434;
+  transition: 0.5s;
+  cursor: pointer;
+}
+body .con .conTable table tbody tr .conBtn .deleteBtn:hover {
+  background-color: white;
+  color: #de3434;
+}
+body .con .conTable table tbody tr .conBtn .updateQuaintity {
+  padding: 7px 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+  color: white;
+  background-color: darkcyan;
+  border-radius: 5px;
+  border: 1px solid darkcyan;
+  transition: 0.5s;
+  cursor: pointer;
+}
+body .con .conTable table tbody tr .conBtn .updateQuaintity:hover {
+  background-color: white;
+  color: darkcyan;
+}
+body .con .conTable table tbody td {
   padding: 15px 30px;
 }
-.con .conTable table tbody td .conImg {
+body .con .conTable table tbody td .conImg {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.con .conTable table tbody td .conImg img {
+body .con .conTable table tbody td .conImg img {
   height: 50px;
 }
-.con .conTable table tbody td .conImg h4 {
+body .con .conTable table tbody td .conImg h4 {
   font-weight: 400;
 }
-.con .conCheckout {
+body .con .conTable table tbody td input {
+  width: 40px;
+  padding: 3px;
+  outline: none;
+  transition: 0.5s;
+  text-align: center;
+}
+body .con .conTable table tbody td input:hover, body .con .conTable table tbody td input:focus {
+  transform: scale(1.1);
+}
+body .con .conCheckout {
   margin-top: 50px;
   display: flex;
   justify-content: center;
@@ -317,24 +457,24 @@ footer .crt {
   gap: 30px;
 }
 @media (min-width: 950px) {
-  .con .conCheckout {
+  body .con .conCheckout {
     justify-content: space-between;
   }
 }
-.con .conCheckout .conCoupon {
+body .con .conCheckout .conCoupon {
   border-radius: 5px;
   display: flex;
   align-items: center;
   gap: 15px;
   min-width: 290px;
 }
-.con .conCheckout .conCoupon input {
+body .con .conCheckout .conCoupon input {
   border-radius: 5px;
   min-width: 220px;
   padding: 10px;
   border: 1px solid black;
 }
-.con .conCheckout .conCoupon button {
+body .con .conCheckout .conCoupon button {
   border-radius: 5px;
   padding: 13px 30px;
   background-color: #de3434;
@@ -344,31 +484,31 @@ footer .crt {
   transition: 0.5s;
   cursor: pointer;
 }
-.con .conCheckout .conCoupon button:hover {
+body .con .conCheckout .conCoupon button:hover {
   background-color: white;
   color: #de3434;
 }
-.con .conCheckout .conCart {
+body .con .conCheckout .conCart {
   border: 1px solid black;
   padding: 15px;
   border-radius: 5px;
   min-width: 300px;
   text-align: center;
 }
-.con .conCheckout .conCart h4 {
+body .con .conCheckout .conCart h4 {
   text-align: left;
 }
-.con .conCheckout .conCart div {
+body .con .conCheckout .conCart div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-bottom: 5px;
   margin-top: 15px;
 }
-.con .conCheckout .conCart div:not(:nth-of-type(3)) {
+body .con .conCheckout .conCart div:not(:nth-of-type(3)) {
   border-bottom: 1px solid #ccc;
 }
-.con .conCheckout .conCart button {
+body .con .conCheckout .conCart button {
   background-color: #de3434;
   padding: 13px 30px;
   border: none;
@@ -381,7 +521,7 @@ footer .crt {
   transition: 0.5s;
   cursor: pointer;
 }
-.con .conCheckout .conCart button:hover {
+body .con .conCheckout .conCart button:hover {
   background-color: white;
   color: #de3434;
 }/*# sourceMappingURL=cart.css.map */

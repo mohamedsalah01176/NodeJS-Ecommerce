@@ -24,10 +24,16 @@ html(lang="en")
     script. 
         let token=document.cookie.split("=")[1];
         let addToCart=document.querySelectorAll("#addToCart");
+        let searchInput=document.querySelector(".search input");
+        let productsSearch=document.getElementsByClassName("productsSearch");
         let valueOfCoupon=0;
         let TotalPrice=0;
         let dicountValue=0;
         let counterCoupon=0;
+        let errorArray=[];
+        const baseURL = !{JSON.stringify(baseURL)};
+
+
         if(token){
             document.getElementsByClassName("singIn")[0].classList.add("disapeare");
         }
@@ -35,9 +41,14 @@ html(lang="en")
             document.getElementsByClassName("profile")[0].classList.add("disapeare");
             document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
         }
+        document.querySelector(".logout button").onclick=()=>{
+            document.cookie=" token= ";
+            window.location.href="/register"
+        }
+        
         async function fetchData(){
             if(token){
-                let res= await fetch("http://localhost:5000/api/cart",{
+                let res= await fetch(`${baseURL}/api/cart`,{
                     method:"GET",
                     headers:{
                         "Content-Type":"application/json",
@@ -45,23 +56,31 @@ html(lang="en")
                     },
                 })
                 let data=await res.json();
-                console.log(data);
                 data.products.forEach((item,index)=>{
                     TotalPrice+=item.newPrice * item.quantity;
                     document.getElementById("tbody").innerHTML+=`
                         <tr>
                             <td>
-                                <div class="conImg"><img src=${item.thumbnail} alt=${item.title} />
+                                <div class="conImg">
+                                    <img src=${item.thumbnail} alt=${item.title} />
                                     <h4>${item.title}</h4>
                                 </div>
                             </td>
                             <td> $${item.newPrice}</td>
-                            <td> ${item.quantity}</td>
-                            <td> $${item.newPrice * item.quantity}</td>
+                            <td> <input type="number" value='${item.quantity}' min="1" step="1" max="5" id="quaintityInput" data-productID=${item._id} data-title=${item.title}></td>
+                            <td> $${(item.newPrice * item.quantity).toFixed(2)}</td>
+                            <td>
+                                <div class="conBtn">
+                                    <button data-productId=${item._id} class="deleteBtn" >Delete</button>
+                                </div>
+                            </td>
                         </tr>
                     `
                 })
                 let conCheckout=document.querySelectorAll(".conCheckout");
+                
+
+
                 conCheckout[0].innerHTML=`
                     <div class="conCoupon">
                         <div id="conInput">
@@ -81,22 +100,28 @@ html(lang="en")
                         </div>
                         <div>
                             <h5>Total </h5>
-                            <p id="TotalPriceShipping">$${TotalPrice - dicountValue + 25 }</p>
+                            <p id="TotalPriceShipping">$${(TotalPrice - dicountValue + 25).toFixed(2) }</p>
                         </div>
                         <button>Process to checkout</button>
                     </div>
                 `
-                let btn=document.getElementById("couponBtn");
+
+                let couponBtn=document.getElementById("couponBtn");
+                let deleteBtns=document.querySelectorAll(".deleteBtn");
+                let quaintityInputs=document.querySelectorAll("#quaintityInput");
+                let updateQuaintity=document.querySelectorAll(".updateQuaintity");
                 let div=document.createElement("div");
 
-                btn.addEventListener("click",async(e)=>{
+
+
+                couponBtn.addEventListener("click",async(e)=>{
                     div.innerText=" "
                     let TotalPriceP=document.getElementById("TotalPrice");
                     let TotalPriceShippingP=document.getElementById("TotalPriceShipping");
                     try{
                         if(!counterCoupon>=1){
                             let coupon=document.getElementById("inputCoupon").value;
-                            let res2=await fetch("http://localhost:5000/api/checkCoupon",{
+                            let res2=await fetch(`${baseURL}/api/checkCoupon`,{
                                 method:"POST",
                                 headers:{
                                     "Content-Type":"application/json",
@@ -108,8 +133,8 @@ html(lang="en")
                             if(data2.status === "success"){
                                 counterCoupon++;
                                 dicountValue=data2.discountValue;
-                                TotalPriceP.innerHTML=TotalPrice - dicountValue
-                                TotalPriceShippingP.innerHTML=TotalPrice - dicountValue + 25
+                                TotalPriceP.innerHTML=(TotalPrice - dicountValue).toFixed(2)
+                                TotalPriceShippingP.innerHTML=(TotalPrice - dicountValue + 25).toFixed(2)
                             }
                             
                             if(data2.status === "fail"){
@@ -128,15 +153,136 @@ html(lang="en")
                     }
                     
                 })
-                
+                deleteBtns.forEach((btn)=>{
+                    btn.addEventListener("click",async ()=>{
+                        try{
+                            let productId=btn.getAttribute("data-productId")
+                            let res= await fetch(`${baseURL}/api/cart`,{
+                                method:"DELETE",
+                                headers:{
+                                    "Content-Type":"application/json",
+                                    "Authorization":`Bearer ${token}`
+                                },
+                                body:JSON.stringify({productId:productId})
+                            })
+                            let data=await res.json();
+                            console.log(data.status)
+                            if(data.status == "success"){
+                                window.location.reload()
+                            }
+                            
+                        }
+                        catch(err){
+                            console.log(err)
+                        }
+                    })
+                })
+                quaintityInputs.forEach((inp)=>{
+                    inp.addEventListener("change",async()=>{
+                        try{
+                            let productId=inp.getAttribute("data-productID")
+                            let productTitle=inp.getAttribute("data-title")
+                            console.log(productId)
+                            let res=await fetch(`${baseURL}/api/cart`,{
+                                method:"PATCH",
+                                headers:{
+                                    "Content-Type":"application/json",
+                                    "Authorization":`Bearer ${token}`
+                                },
+                                body:JSON.stringify({productId:productId,newQuaintity:inp.value})
+                            })
+                            let data=await res.json();
+                            if(data.status === "success"){
+                                window.location.reload();
+                            }
+                            if(data.status === "fail"){
+                                let Div=document.createElement("div");
+                                Div.classList.add("error");
+
+                                let message=document.createElement("p");
+                                    message.innerText=`${data.message} from ${productTitle}`;
+
+                                let closeBtn=document.createElement("button");
+                                closeBtn.innerText="x";
+                                closeBtn.onclick=()=>{Div.remove()}
+                                setTimeout(()=>{
+                                    Div.remove();
+                                },2000)
+
+                                Div.appendChild(closeBtn);
+                                Div.appendChild(message);
+                                document.body.appendChild(Div);
+
+                                throw data.message;
+                            }
+                        }
+                        catch(err){
+                            console.log(err)
+                        }
+                        
+                    })
+                })
             }
             else{
                 window.location.href="/register"
             }
-        }
-        
+            searchInput.addEventListener("keyup",async(e)=>{
+                productsSearch[0].innerHTML=""
+                let searchTitle=searchInput.value;
+                if(searchTitle){
+                    productsSearch[0].style.display="block";
+                }else{
+                    productsSearch[0].style.display="none";
+                }
+                try{
+                    let res=await fetch(`${baseURL}/api/search`,{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":`Bearer ${token}`,
+                        },
+                        body:JSON.stringify({title:searchTitle})
+                    })
+                    let data = await res.json();
+                    console.log(data);
+                    data.searchedProducts.forEach((item)=>{
+                        productsSearch[0].innerHTML+=`
+                            <li><a href='/products/${item._id}'>${item.title}</a></li>
+                        `
+                    })
+                }
+                catch(err){
+                    console.log(err);
+                }
+                if(e.key == "Enter"){
+                    window.location.href=`/search/${searchTitle}`
+                }
+            })
+        }       
         fetchData();
-
+        
+        async function lengthCart(){
+            try{
+                let res= await fetch(`${baseURL}/api/cart`,{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    }, 
+                });
+                let data = await res.json();
+                if(data.status){
+                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                }
+                else{
+                    throw data.message
+                }
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+        lengthCart()
 
 
         

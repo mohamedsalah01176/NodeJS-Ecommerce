@@ -5,8 +5,8 @@ div.grid.container
                     div.card
                         a(href=`/products/${item.id}`).image
                             img(src=item.thumbnail,alt="groceries") 
-                            if  item.discountPercentage.toFixed(0) > 0
-                                div.discount #{item.discountPercentage.toFixed(0)}%
+                            if  item.discountPercentage.toFixed(1) > 0
+                                div.discount #{item.discountPercentage.toFixed(1)}%
                         button#addToCart(data-id=`${item._id}`,data-price=`${(item.price -((item.price * item.discountPercentage)/100)).toFixed(2)}`) Add To Cart
                         h3= item.title.slice(0,50) + "..."
                         div.conPrice

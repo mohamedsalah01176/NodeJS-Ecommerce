@@ -1,21 +1,22 @@
-import { ProductsControl } from './controlles/productsControl';
-import express, { Response,Request } from "express";
+import express from "express";
 import dotenv from "dotenv";
-import { getFakeData } from "./data/fakeData";
-import { IProduct } from "./interfaces/Product";
-import { ProductsService } from "./services/productsService";
 import path from 'path';
+import mongoose  from 'mongoose';
+import cors from "cors";
+import { router as apiRouter} from './router/apiRoutes';
+import { router as renderRoutes} from './router/rederRoutes';
+import ErrorMeddileware from './meddileware/error';
+import helmet from "helmet";
+import morgan from "morgan";
+import { rateLimit } from 'express-rate-limit';
+import compression from "compression"
 
-// import {productsRoute,singleProduct,createProduct,updateProduct,deleteProduct} from "./controlles/RoutesControlles"
+
+
+const app=express();
+const mongoURI = process.env.URL_DB as string;
 
 dotenv.config();
-const app=express();
-import mongoose  from 'mongoose';
-import { UserControl } from './controlles/userControl';
-import { UserServices } from './services/userService';
-const mongoURI = process.env.URL_DB as string;
-import cors from "cors";
-
 
 
 // we use this meddileware for solve post Requist to match data of resquit for same header "application/json"
@@ -25,24 +26,38 @@ app.use(express.json());
 
 app.use(cors());
 
-/* ====== select custom header ======
-    app.use(express.json({
-    type:"custom/header"
-    }));*/
+
+// we use it to provide the attacks accourding header
+app.use(helmet({
+    // to solve show image problem
+    contentSecurityPolicy:{
+        directives:{
+            "default-src": ["'self'"],
+            "script-src": ["'self'", "'unsafe-inline'"],  
+            "img-src":["'self'","https://cdn.dummyjson.com"]
+        }
+    },
+    // to provide attecker to write iframe in page
+    xFrameOptions:{
+        action:"deny"
+    }
+}))
+
+app.use(compression())
+// to present the requests on terminal
+// app.use(morgan("dev"))
 
 
+// to provide DOS attack
+const limiter=rateLimit({
+    windowMs:15 * 60 * 1000, // 15 minutes
+    limit:1000, // you have 100 request from one ip address at 15 minutes
+    message:"Too many requests, please try again later"
+})
 
-// to solve environment Problem => we use "dotenv libairary"
-const PORT=process.env.PORTNUM || 5001;
+app.use(limiter)
 
 
-
-// MVC Architictue
-let productsService=new ProductsService()
-let productsControl=new ProductsControl(productsService)
-
-let userservices=new UserServices();
-let userControl=new UserControl(userservices)
 
 
 
@@ -53,55 +68,41 @@ app.set("view engine","pug");
 
 // to read the files pug from views => to start read from src file
 app.set("views",path.join(__dirname,"views"))
-
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 // we put the directory of static files to "pubic file" it is contain the styles
 // and solve problem style do not work,
 app.use(express.static(path.join(__dirname,"public")));
 
 
 
-app.get("/Home",(req,res)=>{productsControl.renderHomePage(req,res)})
-app.get("/products",(req,res)=>{productsControl.renderAllProducts(req,res)})
-app.get("/products/:id",(req,res)=>{productsControl.renderSingleProductpage(req,res)})
-app.get("/products/:category",(req,res)=>{productsControl.renderSingleProductpage(req,res)})
-
-app.get("/cart",(req, res)=>productsControl.renderCartPage(req,res))
-app.get("/api/cart",(req, res)=>productsControl.getCartProducs(req,res))
-app.post("/api/cart",(req, res)=>productsControl.addToCart(req,res))
-app.post("/api/checkCoupon",(req, res)=>productsControl.checkCoupon(req,res))
 
 
-app.get("/register",(req,res)=>userControl.renderRegisterPage(req,res))
-app.get("/login",(req,res)=>userControl.renderLogin(req,res))
-app.get("/resetPassword/:email",(req,res)=>userControl.renderResetPassword(req,res))
-
-app.post("/api/register",(req,res)=>userControl.postResiter(req,res))
-app.post("/api/login",(req,res)=>userControl.postLogin(req,res))
-app.post("/api/forgetPasswor",(req,res)=>userControl.forgetPassword(req,res))
-app.post("/api/resetPassword",(req,res)=>userControl.resetPassword(req,res))
+app.use("/",renderRoutes)
+app.use("/api",apiRouter)
 
 
 
-// MVC Architictue
-app.get("/api/products",(req,res)=>productsControl.getAllProducts(req,res));
-app.get("/api/products/:id",(req,res)=>productsControl.getProductById(req,res))
 
-app.post("/api/products",(req,res)=>productsControl.createProduct(req,res))
-app.patch("/api/products/:id",(req,res)=>productsControl.updataProduct(req,res))
-app.delete("/api/products/:id",(req,res)=>productsControl.deletProduct(req,res))
-
-
-
-app.get("*",(req,res)=>{
-    res.render("notFound",{title:"Not Found"})
+app.get("/*",(req,res)=>{
+    if(req.originalUrl.startsWith("/api")){
+        res.status(404).json({
+            status:"fail",
+            message:`the ${req.originalUrl} Url Not Found`
+        })
+    }
+    res.status(404).render("error",{status:404,title:"Not Found"})
 })
 
+app.use(ErrorMeddileware.handle)
+
+
+// to solve environment Problem => we use "dotenv libairary"
+const PORT=process.env.PORTNUM || 5001;
 
 
 mongoose.connect(mongoURI).then(()=>{
     console.log("mongoose Server");
-}) ;
-
+}) ; 
 app.listen(PORT,()=>{
     console.log(`the server started on localhost:${PORT}`)
 })

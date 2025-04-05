@@ -2,8 +2,10 @@ cript password
 token
 Update qauitiy
 delete product cart
+logout button
+search
 about
 home page 
-logout button
 profile 
 delete and update data profile
+checkout page
