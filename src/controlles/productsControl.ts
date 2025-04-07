@@ -8,7 +8,6 @@ export class ProductsControl{
     constructor(private productsService:ProductsService){
     }
     renderHomePage(req:Request,res:Response){
-        console.log(process.env.BASEURL)
         res.render("home",{
             title:"Home Page",
             url:"Home",
@@ -51,9 +50,7 @@ export class ProductsControl{
         res.render("cart",{url:`Home/${req.url}`,title:"Cart page",baseURL:process.env.BASEURL});
     }
     renderSearchedProducts(req:Request,res:Response){
-        console.log(req.params.searchTitle)
         let resSer:any=this.productsService.handleSearchProduct(req.params.searchTitle);
-        // console.log(resSer)
         if(resSer.status === "success"){
             res.render("searchedProducts",{
                 searchedProducts:resSer.searchedProducts,
@@ -94,10 +91,10 @@ export class ProductsControl{
         let token:string =req.headers["authorization"]?.split(" ")[1] as string;
         let resSer=await this.productsService.AllCartProducts(token);
         if(resSer.status === "success"){
-            res.send(resSer)
+            res.json(resSer)
         }
         if(resSer.status === "fail"){
-            res.status(400).send(resSer);
+            res.status(400).json(resSer);
         }
     }
     async checkCoupon(req:Request,res:Response){

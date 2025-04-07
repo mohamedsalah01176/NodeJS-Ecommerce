@@ -56,7 +56,6 @@ html(lang="en")
                             body:JSON.stringify({productId:productId,newPrice:newPrice})
                         })
                         let data=await res.json();
-                        //- window.location.reload();
                         lengthCart()
                         console.log(data);
                         console.log(productId)
@@ -71,28 +70,7 @@ html(lang="en")
             })
         })
 
-        async function lengthCart(){
-            try{
-                let res= await fetch(`${baseURL}/api/cart`,{
-                    method:"GET",
-                    headers:{
-                        "Content-Type":"application/json",
-                        "Authorization":`Bearer ${token}`,
-                    }, 
-                });
-                let data = await res.json();
-                if(data.status){
-                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
-                }
-                else{
-                    throw data.message
-                }
-            }
-            catch(err){
-                console.log(err)
-            }
-        }
-        lengthCart()
+        
 
         searchInput.addEventListener("keyup",async(e)=>{
             productsSearch[0].innerHTML=""
@@ -127,5 +105,26 @@ html(lang="en")
             }
         })
         
-        
+        async function lengthCart(){
+            try{
+                let res= await fetch(`${baseURL}/api/cart`,{
+                    method:"GET",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    }, 
+                });
+                let data = await res.json();
+                if(data.status){
+                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                }
+                else{
+                    throw data.message
+                }
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+        lengthCart()
 

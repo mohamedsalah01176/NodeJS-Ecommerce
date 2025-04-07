@@ -12,7 +12,6 @@ import { rateLimit } from 'express-rate-limit';
 import compression from "compression"
 
 
-
 const app=express();
 const mongoURI = process.env.URL_DB as string;
 

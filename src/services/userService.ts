@@ -18,7 +18,6 @@ export class UserServices{
             let data=await UserModel.find({});
             this.users= data ;
         }catch(err){
-            console.log(err);
             return [];
         }
     }
@@ -38,7 +37,6 @@ export class UserServices{
         }catch(error:any){
             if (error.code === 11000) {
                 let namedError=Object.keys(error.keyPattern)[0];
-                console.log(Object.keys(error.keyPattern)[0])
                     return {
                         status:"fail",
                         message:`the ${namedError} is aready regestered`,
@@ -85,8 +83,9 @@ export class UserServices{
 
     async handleForgetPassword(cardID:string){
         
-        let foundUser=this.users.find(async(user)=> await bcrypt.compare(cardID,user.cardID));
+        let foundUser:any=this.users.find(async(user)=> await bcrypt.compare(cardID,user.cardID));
         // let foundUser= await UserModel.findOne({email:{$eq:forgetEmail}});
+        console.log(foundUser.email) 
         if(foundUser){
             let transporter =nodemailer.createTransport({
                 service:"gmail",
@@ -170,7 +169,6 @@ export class UserServices{
                 }
             }
             catch(err){
-                console.log(err);
                 return{
                     status:"fail",
                     message:"Error sending error. Please try again"
@@ -188,6 +186,8 @@ export class UserServices{
     async handleResetPassword(newPassword:string,email:any){
         let currentUser=this.users.find(async(user)=>user.email === email);
         let bcryptUser=await bcrypt.hash(newPassword,10)
+        console.log(currentUser) 
+
         if(currentUser){
             let upDataUser=await UserModel.updateOne({email:{$eq:currentUser.email}},{$set:{password:bcryptUser}});
             if(upDataUser){

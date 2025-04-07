@@ -19,7 +19,6 @@ export class ProductsService{
                 let data=await ProductModel.find({});
                 this.products=data
             }catch(err){
-                console.log(err);
                 return []
             }
     }
@@ -60,17 +59,17 @@ export class ProductsService{
                 await CartModel.updateOne({title:foundProduct.title},{$inc:{quantity:1}})
             }else{
                 let newProduct=new CartModel({userId,newPrice,...currentProduct?.toObject(),quantity:1});
+                console.log(newProduct)
                 await newProduct.save()
             }
             return{
-                sattus:"success", 
+                status:"success", 
                 message:"done"
             }
         }
         catch(err){
-            console.log(err)
             return{
-                sattus:"fail",
+                status:"fail",
                 message:err
             }
         }
@@ -83,7 +82,7 @@ export class ProductsService{
             };
         }
         try{
-            let decodeToken:any=jwt.verify(token,process.env.SECTERTOKENKEY as string);
+            let decodeToken:any= jwt.verify(token,process.env.SECTERTOKENKEY as string);
             let userId=decodeToken.id
             let products=await CartModel.find({userId:userId},{__v:0});
             return {
@@ -120,7 +119,6 @@ export class ProductsService{
             }
         }
         catch(err){
-            console.log(err);
             return {
                 status:"fail",
                 message:"Coupon Not Valid"
@@ -138,7 +136,6 @@ export class ProductsService{
         try{
             let decodeToken:any= jwt.verify(token,process.env.SECTERTOKENKEY as string);
             let userId=decodeToken.id
-            console.log(userId)
             let deleteProduct=await CartModel.deleteOne({_id:productId,userId:userId});
             console.log(deleteProduct)
             if(deleteProduct.deletedCount>0){
@@ -173,7 +170,6 @@ export class ProductsService{
                 let decodeToken:any= jwt.verify(token,process.env.SECTERTOKENKEY as string);
                 let userId=decodeToken.id
                 let updatedProduct=await CartModel.updateOne({_id:productId,userId:userId},{$set:{quantity:newQuaintity}});
-                console.log(updatedProduct)
                 if(updatedProduct.modifiedCount>0){ 
                     return{
                         status:"success",
