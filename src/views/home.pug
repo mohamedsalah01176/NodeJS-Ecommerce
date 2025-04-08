@@ -173,25 +173,38 @@ html(lang="en")
         let counterHoursDiv = document.getElementById("counterHours");
         let counterMinuteDiv= document.getElementById("counterMinute");
         let counterSecondDiv = document.getElementById("counterSecond");
-        let strDate="Thu Apr 03 2025 20:05:02 GMT+0200 (Eastern European Standard Time)"
-        let dateFixed =new Date(strDate);
         const baseURL = !{JSON.stringify(baseURL)};
+        let strDate = "Thu Apr 10 2025 20:05:02 GMT+0200 (Eastern European Standard Time)";
+        let targetDate  =new Date(strDate);
 
-        let nowTime = new Date(); 
-        dateFixed.setDate(7)
-        let diffDate=dateFixed - nowTime;
-        counterSecondDiv.innerText=`0${Math.floor(diffDate/1000)%60}`;
-        counterMinuteDiv.innerText=`${Math.floor(diffDate/(1000*60))%60}`;
-        counterHoursDiv.innerText=`${Math.floor(diffDate/(1000*60*60))%24}`;
-        counterDaysDiv.innerText=`${Math.floor(diffDate/(1000*60*60*24))}`;
-        let counterSecond=Math.floor(diffDate/1000)%60;
-        let counterMinute=Math.floor(diffDate/(1000*60))%60;
-        let counterHours=Math.floor(diffDate/(1000*60*60))%24;
-        let counterDays=Math.floor(diffDate/(1000*60*60*24));
-        //- diffDate=0;
-        if(diffDate<=0){
-            document.getElementsByClassName("TodayItem")[0].remove()
-        }
+
+        let intervalTimer=setInterval(()=>{
+            let nowTime = new Date(); 
+            let diffDate=targetDate - nowTime;
+            if(diffDate <=0){
+                document.getElementsByClassName("TodayItem")[0].remove()
+                clearInterval(intervalTimer);
+                counterSecondDiv.innerText="00"
+                counterMinuteDiv.innerText="00"
+                counterHoursDiv.innerText="00"
+                counterDaysDiv.innerText="00"
+                return 0;
+            }
+            let counterSecond=Math.floor(diffDate/1000)%60;
+            let counterMinute=Math.floor(diffDate/(1000*60))%60;
+            let counterHours=Math.floor(diffDate/(1000*60*60))%24;
+            let counterDays=Math.floor(diffDate/(1000*60*60*24));
+
+            counterSecondDiv.innerText=counterSecond.toString().padStart(2, "0");
+            counterMinuteDiv.innerText=counterMinute.toString().padStart(2, "0");
+            counterHoursDiv.innerText=counterHours.toString().padStart(2, "0");
+            counterDaysDiv.innerText=counterDays.toString().padStart(2, "0");
+
+        },1000)
+
+
+
+        console.log(token)
 
         if(token){
             document.getElementsByClassName("singIn")[0].classList.add("disapeare");
@@ -204,7 +217,7 @@ html(lang="en")
             document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
         }
         document.querySelector(".logout button").onclick=()=>{
-            document.cookie=" token= ";
+            document.cookie=" token=; ";
             window.location.href="/register"
         }
 
@@ -268,104 +281,24 @@ html(lang="en")
                 window.location.href=`/search/${searchTitle}`
             }
         })
-
-        let setIntervalSecond=setInterval(()=>{
-            if(counterDays>0 || counterHours>0 || counterMinute >0){
-                if(counterSecond>0){
-                    counterSecond--;
-                    
-                }
-                else{
-                    counterSecond=59;
-                }
-                if(counterSecond>9){
-                        counterSecondDiv.innerText=counterSecond;
-                }
-                else{
-                    counterSecondDiv.innerText=`0${counterSecond}`;
-                }
-            }
-            else{
-                    counterHoursDiv.innerText=`00`;
-                    clearInterval(counterSecond)
-            }
-        },1000)
-        let setIntervalMenites=setInterval(()=>{
-            if(counterDays>0 || counterHours>0){
-                if(counterMinute>0){
-                    counterMinute--;
-                }
-                else{
-                    counterMinute=59;
-                }
-                if(counterMinute>9){
-                    counterMinuteDiv.innerText=counterMinute;
-                }
-                else{
-                    counterMinuteDiv.innerText=`0${counterMinute}`;
-                }
-            }
-            else{
-                    counterMinute=0;
-                    counterMinuteDiv.innerText=`00`;
-                    clearInterval(setIntervalMenites)
-            }
-        },1000 *60)
-        let setIntervalHours=setInterval(()=>{
-            if(counterDays>0){
-                if(counterHours>0){
-                    counterHours--;
-                }
-                else{
-                    counterHours=23;
-                }
-                if(counterHours>9 ){
-                        counterHoursDiv.innerText=counterHours;
-                }
-                else{
-                    counterHoursDiv.innerText=`0${counterHours}`;
-                }
-            }
-            else{
-                    counterHours=0;
-                    counterHoursDiv.innerText=`00`;
-                    clearInterval(setIntervalHours)
-            }
-        },1000 * 60 * 60)
-        let setIntervalDays=setInterval(()=>{
-            if(counterDays>0){
-                counterDays--;
-            }
-            else{
-                counterDays=0;
-            }
-            if(counterDays>9){
-                    counterDaysDiv.innerText=counterDays;
-            }
-            else{
-                counterDaysDiv.innerText=`0${counterDays}`;
-            }
-        },1000 * 60 * 60 * 24)
-
-        if(counterDays <=0){
-            clearInterval(setIntervalDays);
-        }
         
         async function lengthCart(){
             try{
-                let res= await fetch(`${baseURL}/api/cart`,{
-                    method:"GET",
-                    headers:{
-                        "Content-Type":"application/json",
-                        "Authorization":`Bearer ${token}`,
-                    }, 
-                });
-                let data = await res.json();
-                if(data.status){
-                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
-                }
-                else{
-                    throw data.message
+                if(token){
+                    let res= await fetch(`${baseURL}/api/cart`,{
+                        method:"GET",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":`Bearer ${token}`,
+                        }, 
+                    });
+                    let data = await res.json();
+                    if(data.status === "success"){
+                        document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                    }
+                    else{
+                        throw data.message
+                    }
                 }
             }
             catch(err){

@@ -271,7 +271,7 @@ html(lang="en")
                     }, 
                 });
                 let data = await res.json();
-                if(data.status){
+                if(data.status === "success"){
                     document.getElementsByClassName("counter")[0].innerText=data.products.length;
                 }
                 else{

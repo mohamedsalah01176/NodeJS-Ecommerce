@@ -172,7 +172,8 @@ body{
                     &:hover{
                         background-color: $ColorRed;
                         color: white;
-                        border: none;
+                        border: 1px solid $ColorRed ;
+                        transform: scale(1.1);
                     }
                 }
             }

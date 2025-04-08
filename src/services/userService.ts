@@ -25,10 +25,13 @@ export class UserServices{
         return this.users; 
     }
     async registeration(body:IUser){
+        let users=await UserModel.find({})
         let bcryptPass=await bcrypt.hash(body.password,10);
         let cardIDPass=await bcrypt.hash(body.cardID,10)
         try{
-            let newUser= new UserModel({_id:this.AllUsers().length +1,...body,password:bcryptPass,cardID:cardIDPass});
+            const lastUser: any = users.length > 0 ? users[users.length - 1] : { _id: 0 };
+            const newId = lastUser._id + 1;
+            let newUser= new UserModel({_id:newId,...body,password:bcryptPass,cardID:cardIDPass});
             await newUser.save();
             return{
                 status:"success", 
@@ -36,13 +39,13 @@ export class UserServices{
             }
         }catch(error:any){
             if (error.code === 11000) {
-                let namedError=Object.keys(error.keyPattern)[0];
+                console.log(Object.keys(error.keyPattern))
                     return {
                         status:"fail",
-                        message:`the ${namedError} is aready regestered`,
+                        message:`the email or card id is aready regestered`,
                     }
             }
-            if(error.name == "ValidationError"){
+            if(error.name == "ValidationError"){ 
                 return {
                     status: "fail",
                     message: "Validation failed",

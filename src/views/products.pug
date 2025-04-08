@@ -107,19 +107,21 @@ html(lang="en")
         
         async function lengthCart(){
             try{
-                let res= await fetch(`${baseURL}/api/cart`,{
-                    method:"GET",
-                    headers:{
-                        "Content-Type":"application/json",
-                        "Authorization":`Bearer ${token}`,
-                    }, 
-                });
-                let data = await res.json();
-                if(data.status){
-                    document.getElementsByClassName("counter")[0].innerText=data.products.length;
-                }
-                else{
-                    throw data.message
+                if(token){
+                    let res= await fetch(`${baseURL}/api/cart`,{
+                        method:"GET",
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":`Bearer ${token}`,
+                        }, 
+                    });
+                    let data = await res.json();
+                    if(data.status === "success"){
+                        document.getElementsByClassName("counter")[0].innerText=data.products.length;
+                    }
+                    else{
+                        throw data.message
+                    }
                 }
             }
             catch(err){

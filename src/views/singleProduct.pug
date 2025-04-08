@@ -38,10 +38,10 @@ html(lang="en")
                         p.desc=product.description
                         div.conBuy 
                             div.quantity
-                                button.munis(onclick="decreaseQuantity()") 
+                                button.munis
                                     i.fa-solid.fa-minus
                                 div#conQuaiintity 0
-                                button.plus(onclick="increaseQuantity()") 
+                                button.plus
                                     i.fa-solid.fa-plus
                             button.btnBuy#addToCart(data-id=product._id) Buy Now
                         div.Reviews
@@ -98,15 +98,22 @@ html(lang="en")
             let quantity=0;
             const baseURL = !{JSON.stringify(baseURL)};
             //- console.log(baseURL,"dd"); 
-            function increaseQuantity() {
+            //- function increaseQuantity() {
+            //- }
+            document.getElementsByClassName("plus")[0].addEventListener("click",()=>{
                 quantity++;
                 document.getElementById("conQuaiintity").innerText = quantity;
-            }
+            })
+            document.getElementsByClassName("munis")[0].addEventListener("click",()=>{
+                if (quantity > 0){
+                    quantity--;
+                    document.getElementById("conQuaiintity").innerText = quantity;   
+                }
+                else{
+                    quantity=0;
+                }
+            })
             function decreaseQuantity() {
-                //- if (quaintity > 0){
-                //- }
-                quantity--;
-                document.getElementById("conQuaiintity").innerText = quantity;   
             }
             let token=document.cookie.split("=")[1]
             if(token){
@@ -123,9 +130,17 @@ html(lang="en")
             let addToCart=document.querySelectorAll("#addToCart");
             if(token){
                 document.getElementsByClassName("singIn")[0].classList.add("disapeare");
-            }else{
+                document.getElementsByClassName("profile")[0].classList.remove("disapeare");
+                document.getElementsByClassName("logout")[0].classList.remove("disapeare");
+            }
+            else{
                 document.getElementsByClassName("profile")[0].classList.add("disapeare");
+                document.getElementsByClassName("logout")[0].classList.add("disapeare");
                 document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+            }
+            document.querySelector(".logout button").onclick=()=>{
+                document.cookie=" token= ";
+                window.location.href="/register"
             }
             
             addToCart.forEach((button)=>{
@@ -188,20 +203,22 @@ html(lang="en")
             })
             async function lengthCart(){
                 try{
-                    let res= await fetch(`${baseURL}/api/cart`,{
-                        method:"GET",
-                        headers:{
-                            "Content-Type":"application/json",
-                            "Authorization":`Bearer ${token}`,
-                        }, 
-                    });
-                    let data = await res.json();
-                    console.log(data)
-                    if(data.status){
-                        document.getElementsByClassName("counter")[0].innerText=data.products?.length;
-                    }
-                    else{
-                        throw data.message
+                    if(token){
+                        let res= await fetch(`${baseURL}/api/cart`,{
+                            method:"GET",
+                            headers:{
+                                "Content-Type":"application/json",
+                                "Authorization":`Bearer ${token}`,
+                            }, 
+                        });
+                        let data = await res.json();
+                        console.log(data)
+                        if(data.status === "success"){
+                            document.getElementsByClassName("counter")[0].innerText=data.products?.length;
+                        }
+                        else{
+                            throw data.message
+                        }
                     }
                 }
                 catch(err){

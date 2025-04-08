@@ -29,84 +29,89 @@ html(lang="en")
         include ./component/footer.pug
     
 
-        script. 
-            let token=document.cookie.split("=")[1];
-            let searchInput=document.querySelector(".search input");
-            let addToCart=document.querySelectorAll("#addToCart");
-            let productsSearch=document.getElementsByClassName("productsSearch");
-            const baseURL = !{JSON.stringify(baseURL)};
-            if(token){
-                document.getElementsByClassName("singIn")[0].classList.add("disapeare");
-            }else{
-                document.getElementsByClassName("profile")[0].classList.add("disapeare");
-                document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
-            }
-            document.querySelector(".logout button").onclick=()=>{
-                document.cookie=" token= ";
-                window.location.href="/register"
-            }
-            
-            addToCart.forEach((button)=>{
-                button.addEventListener("click",async(e)=>{
-                    let productId=button.getAttribute("data-id");
-                    console.log(productId)
-                    try{
-                        if(token){
-                            let res = await fetch(`${baseURL}/api/cart`,{
-                                method:"POST",
-                                headers:{
-                                    "Content-Type":"application/json",
-                                    "Authorization":`Bearer ${token}`,
-                                }, 
-                                body:JSON.stringify({productId:productId})
-                            })
-                            let data=await res.json();
-                            console.log(data);
-                        }else{
-                            window.location.href="/register";
-                        }
-                    }
-                    catch(err){
-                        console.log(err);
-                    }
-                    lengthCart()
-                })
-            })
-            searchInput.addEventListener("keyup",async(e)=>{
-                productsSearch[0].innerHTML=""
-                let searchTitle=searchInput.value;
-                if(searchTitle){
-                    productsSearch[0].style.display="block";
-                }else{
-                    productsSearch[0].style.display="none";
-                }
+    script. 
+        let token=document.cookie.split("=")[1];
+        let searchInput=document.querySelector(".search input");
+        let addToCart=document.querySelectorAll("#addToCart");
+        let productsSearch=document.getElementsByClassName("productsSearch");
+        const baseURL = !{JSON.stringify(baseURL)};
+        if(token){
+            document.getElementsByClassName("singIn")[0].classList.add("disapeare");
+            document.getElementsByClassName("profile")[0].classList.remove("disapeare");
+            document.getElementsByClassName("logout")[0].classList.remove("disapeare");
+        }
+        else{
+            document.getElementsByClassName("profile")[0].classList.add("disapeare");
+            document.getElementsByClassName("logout")[0].classList.add("disapeare");
+            document.getElementsByClassName("singIn")[0].classList.remove("disapeare");
+        }
+        document.querySelector(".logout button").onclick=()=>{
+            document.cookie=" token= ";
+            window.location.href="/register"
+        }
+        addToCart.forEach((button)=>{
+            button.addEventListener("click",async(e)=>{
+                let productId=button.getAttribute("data-id");
+                let newPrice=button.getAttribute("data-price");
+                console.log(productId)
                 try{
-                    let res=await fetch(`${baseURL}/api/search`,{
-                        method:"POST",
-                        headers:{
-                            "Content-Type":"application/json",
-                            "Authorization":`Bearer ${token}`,
-                        },
-                        body:JSON.stringify({title:searchTitle})
-                    })
-                    let data = await res.json();
-                    console.log(data);
-                    data.searchedProducts.forEach((item)=>{
-                        productsSearch[0].innerHTML+=`
-                            <li><a href='/products/${item._id}'>${item.title}</a></li>
-                        `
-                    })
+                    if(token){
+                        let res = await fetch(`${baseURL}/api/cart`,{
+                            method:"POST",
+                            headers:{
+                                "Content-Type":"application/json",
+                                "Authorization":`Bearer ${token}`,
+                            }, 
+                            body:JSON.stringify({productId:productId,newPrice:newPrice})
+                        })
+                        let data=await res.json();
+                        console.log(data);
+                        lengthCart()
+                    }else{
+                        window.location.href="/register";
+                    }
                 }
                 catch(err){
                     console.log(err);
                 }
-                if(e.key == "Enter"){
-                    window.location.href=`/search/${searchTitle}`
-                }
             })
+        })
+        searchInput.addEventListener("keyup",async(e)=>{
+            productsSearch[0].innerHTML=""
+            let searchTitle=searchInput.value;
+            if(searchTitle){
+                productsSearch[0].style.display="block";
+            }else{
+                productsSearch[0].style.display="none";
+            }
+            try{
+                let res=await fetch(`${baseURL}/api/search`,{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${token}`,
+                    },
+                    body:JSON.stringify({title:searchTitle})
+                })
+                let data = await res.json();
+                console.log(data);
+                data.searchedProducts.forEach((item)=>{
+                    productsSearch[0].innerHTML+=`
+                        <li><a href='/products/${item._id}'>${item.title}</a></li>
+                    `
+                })
+            }
+            catch(err){
+                console.log(err);
+            }
+            if(e.key == "Enter"){
+                window.location.href=`/search/${searchTitle}`
+            }
+        })
 
-            async function lengthCart(){
-                try{
+        async function lengthCart(){
+            try{
+                if(token){
                     let res= await fetch(`${baseURL}/api/cart`,{
                         method:"GET",
                         headers:{
@@ -115,15 +120,16 @@ html(lang="en")
                         }, 
                     });
                     let data = await res.json();
-                    if(data.status){
+                    if(data.status === "success"){
                         document.getElementsByClassName("counter")[0].innerText=data.products.length;
                     }
                     else{
                         throw data.message
                     }
                 }
-                catch(err){
-                    console.log(err)
-                }
             }
+            catch(err){
+                console.log(err)
+            }
+        }
             lengthCart()

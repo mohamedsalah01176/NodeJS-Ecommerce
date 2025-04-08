@@ -498,7 +498,8 @@ body .con .categoryItem .conCategory .box h2 {
 body .con .categoryItem .conCategory .box:hover {
   background-color: #de3434;
   color: white;
-  border: none;
+  border: 1px solid #de3434;
+  transform: scale(1.1);
 }
 body .con .bestItem {
   margin: 100px 0px;
